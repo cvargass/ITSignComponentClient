@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove="Services\SecurityService.cs~RF4f0a752d.TMP" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="itext7" Version="7.2.2" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="SignerPDF.DigitalSignature.Core">
+			<HintPath>Lib\SignerPDF.DigitalSignature.Core.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>

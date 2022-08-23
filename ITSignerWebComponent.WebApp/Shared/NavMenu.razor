@@ -1,0 +1,34 @@
+﻿<div class="top-row pl-4 navbar navbar-dark d-flex">
+    <a class="navbar-brand justify-content-center" href="admin-board/customers">
+        <img src="./images/logo.jpeg" class="img-fluid rounded logo"/>    
+    </a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="admin-board/customers" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Clientes
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="admin-board/add-customer">
+                <span class="oi oi-plus" aria-hidden="true"></span> Agregar Cliente
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

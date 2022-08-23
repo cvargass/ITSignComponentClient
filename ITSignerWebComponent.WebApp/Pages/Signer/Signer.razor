@@ -1,0 +1,131 @@
+﻿@page "/"
+@layout AppLayout
+
+<div class="container">
+    <div class="m-3">
+        @if (!FlagActivatedLicense)
+        {
+            <div class="alert alert-warning" role="alert">
+                <h3 class="">Activación de Licencia</h3>
+                <p>
+                    Para poder comenzar a hacer uso de los servicios de firma de documentos, primero debe realizar la activación de su licencia. Para ello consulte el correo electrónico que suministro, allí encontrará
+                    el PIN de Licencia que fue asignado para su uso e ingréselo en el siguiente formulario.
+                </p>
+                <EditForm Model="@LicenseDto" OnValidSubmit="onActivateLicense">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <div class="row">
+                        <label for="doc-file" class="col-md-12 col-form-label">Código Licencia:</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <InputText name="CodeLicense" placeholder="PIN Licencia" @bind-Value="LicenseDto.License" class="form-control"></InputText>
+                            <ValidationMessage For="(() => LicenseDto.License)"></ValidationMessage>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-row-reverse mt-3">
+                        <button type="submit" class="btn btn-success btn-lg" disabled="@DisabledBtnActivateLicense"> Activar Licencia </button>
+                    </div>
+                </EditForm>
+            </div>
+        }
+
+        <div class="border rounded position-relative" style="background-color:#f7f7f9">
+            <div id="form-signed-disabled" class="position-absolute h-100 w-100" style="background-color:#fff; z-index:1;opacity:0.4"></div>
+
+            <div class="m-3">
+                <EditForm Model="@PreSignedDto" OnValidSubmit="onSubmit">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+
+
+                    <div class="row">
+                        <label for="doc-file" class="col-md-12 col-form-label">Documento(s) por firmar:</label>
+                    </div>
+
+                    <div class="row">
+                        @if(FlagAPIFiles){
+                        @*Table*@
+                        <div class="col-12 p-3">
+                            <div class="table-responsive">
+                                <table id="tbl_files" class="table table-hover">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col" class="text-center">Nombre de archivo</th>
+                                            <th scope="col" class="text-center">Firmar</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (@PendingFiles is null)
+                                        {
+                                            <div>Cargando...</div>
+                                        }
+                                        else if (@PendingFiles.Length == 0)
+                                        {
+                                            <div>No hay archivos pendientes por firmar</div>
+                                        }
+                                        else
+                                        {
+                                            @for (int i = 0; i < @PendingFiles.Length; i++)
+                                            {
+                                                var nameFile = @PendingFiles[i];  
+
+                                                <tr class="table-custom">
+                                                    <td class="text-center">@nameFile</td>
+                                                    <td class="text-center">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" @onchange="eventArgs => { onCheckBoxChange(nameFile, eventArgs.Value); }" />  
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                @*<ValidationMessage For="(() => PreSignedDto.PdfToSign)"></ValidationMessage>*@
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    <div class="row mt-3">
+                        <label class="col-md-12 col-form-label">Certificado:</label>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <peculiar-fortify-certificates id="fortify-component" hide-footer language="es" [filters]="{onlyWithPrivateKey: true, keyUsage: ['digitalSignature'], expired: false }">
+                            </peculiar-fortify-certificates>
+                        </div>
+                        <div id="wrapper-certificate-selected" class="col-md-6 p-2 d-flex justify-content-center align-items-center invisible">
+                            <div class="alert alert-success" role="alert">
+                                <p class="text-center">Certificado Seleccionado</p>
+                                <img src="./images/certificate-icon.png" style="width:220px" alt="Certificate Selected Icon" />
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<ValidationSummary></ValidationSummary>*@
+
+                    <div id="btn-sign" class="d-flex justify-content-center align-items-center m-2" style="height:80px">
+                        <button type="submit" class="col-6 btn btn-success h-100">
+                            <div id="sign-btn-view">
+                                Firmar Documento
+                            </div>
+                            <div id="loading-btn-view" class="d-none">
+                                <div>
+                                    Firmando Documentos...
+                                </div>
+                                <div class="spinner-grow spinner-grow-sm" style="width: 3rem; height: 3rem;" role="status"></div>
+                            </div>
+                        </button>
+                    </div>
+                </EditForm>
+
+                <div class="col-12 d-flex justify-content-center align-items-center mt-3">
+                    <button id="btn-downloadDoc" type="button" class="btn btn-danger roll-in-blurred-left d-none w-50" @onclick="DownloadDoc">
+                        Descargar PDF
+                        <img src="./images/doc_down_icon.png" style="width:200px; height:160px" alt="Download PDF Icon" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
