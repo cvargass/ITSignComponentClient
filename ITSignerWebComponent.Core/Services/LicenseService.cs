@@ -14,9 +14,10 @@ namespace ITSignerWebComponent.Core.Services
     public class LicenseService : ILicenseService
     {
         #region URLs API ITSIGN
-            private readonly string _baseUrlAPIITSign = "https://signtest.italm.com.co";
-            //private readonly string _baseUrlAPIITSign = "https://localhost:44380";
-            private readonly string _urlGetPendingCustomer = "api/external/pending-customer-component?pinLicense=[PIN-LICENSE]";
+        //private readonly string _baseUrlAPIITSign = "https://signtest.italm.com.co";
+        private string _baseUrlAPIITSign;
+         //private readonly string _baseUrlAPIITSign = "https://localhost:44380";
+        private readonly string _urlGetPendingCustomer = "api/external/pending-customer-component?pinLicense=[PIN-LICENSE]";
             private readonly string _urlActivateLicense = "api/external/activate-licence?pinLicense=[PIN-LICENSE]";
         #endregion
 
@@ -34,6 +35,8 @@ namespace ITSignerWebComponent.Core.Services
             _configuration = configuration;
             _encryptorService = encryptorService;
             _licensePIN = _configuration["License:PIN"];
+            _baseUrlAPIITSign = _configuration["UrlValidate:url"];
+            
             this.nameFileLicense = $"{_licensePIN}{_extension}";
             httpClient = new HttpClient() { BaseAddress = new Uri(_baseUrlAPIITSign) };
         }
