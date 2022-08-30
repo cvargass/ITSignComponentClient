@@ -1,4 +1,6 @@
-﻿////BEGIN SECTION UTILS FUNCTIONS
+﻿var ProviderIDWindowsCryptoAPI = "1bd0427180fc384b68f5600fb891d59f42af4070";
+
+////BEGIN SECTION UTILS FUNCTIONS
 window.convertArrayBufferToBase64 = function convertArrayBufferToBase64(buffer) {
     var binary = '';
     var bytes = new Uint8Array(buffer);
@@ -149,8 +151,17 @@ window.generateCMSToEmbed = async function (dataToSign) {
         var certificateId = window.localStorage.getItem("CertificateId");
         var privateKeyId = window.localStorage.getItem("PrivateKeyId");
 
+        if (!privateKeyId) {
+            var privateKey = await GetCertificateKey("private", provider, certificateId);
+            if (!privateKey) {
+                throw new Error("Certificate doesn't have private key");
+            }
+        }
+        else {
+            var privateKey = await provider.keyStorage.getItem(privateKeyId);
+        }
+
         var cert = await provider.certStorage.getItem(certificateId);
-        var privateKey = await provider.keyStorage.getItem(privateKeyId);
         var certRawData = await provider.certStorage.exportCert('raw', cert);
 
         var pkiCert = new pkijs.Certificate({
@@ -200,3 +211,193 @@ window.generateCMSToEmbed = async function (dataToSign) {
         window.location.reload();
     }
 }
+
+
+
+
+
+//PAGE SIGNER DROPDOWNLIST
+//Initialize DropDownList Fortify Component
+window.InitializeDdlFortify = async function () {
+    try {
+        self.ws = new WebcryptoSocket.SocketProvider({
+            storage: await WebcryptoSocket.BrowserStorage.create(),
+        });
+
+        ws.connect("127.0.0.1:31337")
+            .on("error", function (e) {
+                console.error(e);
+            })
+            .on("listening", async (e) => {
+                // Check if end-to-end session is approved
+                if (! await ws.isLoggedIn()) {
+                    const pin = await ws.challenge();
+                    // show PIN
+                    setTimeout(() => {
+                        alert("2key session PIN:" + pin);
+                    }, 100)
+                    // ask to approve session
+                    await ws.login();
+                }
+
+                await FillDropDownListCertificates();
+            });
+
+    } catch (e) {
+        console.log('Error in process...');
+        console.error(e);
+    }
+}   
+
+
+window.FillDropDownListCertificates = async function () {
+    const provider = await ws.getCrypto(ProviderIDWindowsCryptoAPI);
+
+    if (! await provider.isLoggedIn()) {
+        await provider.login();
+    }
+
+    let certIDs = await provider.certStorage.keys();
+
+    if (!certIDs.length) {
+        const $option = document.createElement("option");
+        $option.textContent = "Sin certificados";
+        $option.setAttribute("value", "NO-CERT");
+        $option.setAttribute("disabled", true);
+        $option.setAttribute("selected", true);
+
+        AddOptionNoRepeated($("#ddlCertificates"), $option);
+    }
+    else {
+        certIDs = certIDs.filter((id) => {
+            const parts = id.split("-");
+            return parts[0] === "x509";
+        });
+
+        let keyIDs = await provider.keyStorage.keys();
+
+        keyIDs = keyIDs.filter(function (id) {
+            const parts = id.split("-");
+            return parts[0] === "private";
+        });
+
+        const certs = [];
+        for (const certID of certIDs) {
+            for (const keyID of keyIDs) {
+                if (keyID.split("-")[2] === certID.split("-")[2]) {
+                    try {
+                        const cert = await provider.certStorage.getItem(certID);
+
+                        certs.push({
+                            id: certID,
+                            item: cert,
+                        });
+                    } catch (e) {
+                        console.error(`Cannot get certificate ${certID} from CertificateStorage. ${e.message}`);
+                    }
+                }
+            }
+        }
+
+        $("ddlCertificates").textContent = "";
+
+        certs
+            .map((cert) => {
+                return {
+                    id: cert.id,
+                    name: GetCommonName(cert.item.subjectName),
+                }
+            })
+            .sort((a, b) => {
+                if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                    return 1;
+                } else if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                    return -1
+                }
+                return 0;
+            })
+            .forEach((item, index) => {
+                const $option = document.createElement("option");
+                $option.setAttribute("value", item.id);
+                $option.textContent = item.name;
+                if (!index) {
+                    // select first item
+                    $option.setAttribute("selected", true);
+                }
+
+                AddOptionNoRepeated($("#ddlCertificates"), $option);
+            });
+    }
+
+    $("#ddlCertificates").prop("selectedIndex", 0);
+}
+
+function GetCommonName(name) {
+    var reg = /CN=(.+),?/i;
+    var res = reg.exec(name);
+    return res ? res[1].substring(0, 70) : "Unknown";
+}
+
+function AddOptionNoRepeated(selectDOM, $option) {
+    selectDOM.each(function () {
+        existItem = false;
+        if ($(this).attr('value') === $option.value) {
+            existItem = true;
+            return;
+        }
+    });
+
+    if (!existItem) {
+        selectDOM.append($option);
+    }
+}
+
+
+async function ddlCertificatesOnChange(certificateId) {
+    if (certificateId !== '0') {
+        const provider = await ws.getCrypto(ProviderIDWindowsCryptoAPI);
+        var cert = await provider.certStorage.getItem(certificateId);
+        var certRawData = await provider.certStorage.exportCert('raw', cert);
+
+        var pemBase64 = window.convertArrayBufferToBase64(certRawData);
+
+        window.localStorage.setItem("PEMSelected", pemBase64);
+        window.localStorage.setItem("ProviderId", ProviderIDWindowsCryptoAPI);
+        window.localStorage.setItem("CertificateId", certificateId);
+        //window.localStorage.setItem("PrivateKeyId", privateKey.id);
+    }
+    else {
+        window.localStorage.removeItem("PEMSelected");
+        window.localStorage.removeItem("ProviderId");
+        window.localStorage.removeItem("CertificateId");
+        window.localStorage.removeItem("PrivateKeyId");
+    }
+}
+
+async function GetCertificateKey(type, provider, certID) {
+    const keyIDs = await provider.keyStorage.keys()
+    for (const keyID of keyIDs) {
+        const parts = keyID.split("-");
+
+        if (parts[0] === type && parts[2] === certID.split("-")[2]) {
+            const key = await provider.keyStorage.getItem(keyID);
+            if (key) {
+                return key;
+            }
+        }
+    }
+    if (type === "public") {
+        const cert = await provider.certStorage.getItem(certID);
+        if (cert) {
+            return cert.publicKey;
+        }
+    }
+    return null;
+}
+
+function cleanStoragePageDdlSigner () {
+    window.localStorage.removeItem("PEMSelected");
+    window.localStorage.removeItem("ProviderId");
+    window.localStorage.removeItem("CertificateId");
+    window.localStorage.removeItem("PrivateKeyId");
+};
