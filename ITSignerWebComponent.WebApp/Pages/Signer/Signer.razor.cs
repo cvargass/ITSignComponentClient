@@ -47,15 +47,24 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
         public List<string> SelectedFiles { get; set; } = new();
         public bool FlagAPIFiles { get; set; } = false;
 
-
         protected override async void OnInitialized()
         {
+            ValidatePageToLoad();
             var flagActivatedLicense = _apiService.LoadLicense();
 
             if (flagActivatedLicense)
             {
                 LoadValidCertificatesAuthorities();
                 FlagActivatedLicense = true;
+            }
+        }
+
+        private void ValidatePageToLoad()
+        {
+            var flag = configuration["DropDownListPage:Flag"];
+            if (flag == "True")
+            {
+                UriHelper.NavigateTo("./signer");
             }
         }
 
