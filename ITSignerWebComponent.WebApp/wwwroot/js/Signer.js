@@ -1,4 +1,8 @@
-﻿var ProviderIDWindowsCryptoAPI = "1bd0427180fc384b68f5600fb891d59f42af4070";
+﻿var nameProviderWindowsCryptoAPI = "Windows CryptoAPI";
+var nameProviderNSSCertificate = "NSS Certificate DB"
+
+/////////////// PROVIDER TO USE ///////////////////////////
+var providerSelected = nameProviderWindowsCryptoAPI;
 
 ////BEGIN SECTION UTILS FUNCTIONS
 window.convertArrayBufferToBase64 = function convertArrayBufferToBase64(buffer) {
@@ -251,7 +255,10 @@ window.InitializeDdlFortify = async function () {
 
 
 window.FillDropDownListCertificates = async function () {
-    const provider = await ws.getCrypto(ProviderIDWindowsCryptoAPI);
+
+    var providerID = await GetProviderId(providerSelected);
+
+    const provider = await ws.getCrypto(providerID);
 
     if (! await provider.isLoggedIn()) {
         await provider.login();
@@ -355,14 +362,17 @@ function AddOptionNoRepeated(selectDOM, $option) {
 
 async function ddlCertificatesOnChange(certificateId) {
     if (certificateId !== '0') {
-        const provider = await ws.getCrypto(ProviderIDWindowsCryptoAPI);
+
+        var providerID = await GetProviderId(providerSelected);
+
+        const provider = await ws.getCrypto(providerID);
         var cert = await provider.certStorage.getItem(certificateId);
         var certRawData = await provider.certStorage.exportCert('raw', cert);
 
         var pemBase64 = window.convertArrayBufferToBase64(certRawData);
 
         window.localStorage.setItem("PEMSelected", pemBase64);
-        window.localStorage.setItem("ProviderId", ProviderIDWindowsCryptoAPI);
+        window.localStorage.setItem("ProviderId", providerID);
         window.localStorage.setItem("CertificateId", certificateId);
         //window.localStorage.setItem("PrivateKeyId", privateKey.id);
     }
@@ -401,3 +411,18 @@ function cleanStoragePageDdlSigner () {
     window.localStorage.removeItem("CertificateId");
     window.localStorage.removeItem("PrivateKeyId");
 };
+
+async function GetProviderId(providerSelected) {
+    const info = await ws.info();
+
+    if (info.providers.length) {
+        const provider = info.providers.find(provider => provider.name.includes(providerSelected));
+
+        if (provider) {
+            return provider.id;
+        }
+    }
+    else {
+        alert('No Providers');
+    }
+}
