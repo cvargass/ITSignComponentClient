@@ -2,9 +2,11 @@
 using StoreFiles.API.DTOs.PostFile;
 using StoreFiles.API.DTOs.PostFileSigned;
 using StoreFiles.API.Exceptions;
+using StoreFiles.API.QueryFilters;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace StoreFiles.API.Services
 {
@@ -22,7 +24,7 @@ namespace StoreFiles.API.Services
         {
             try
             {
-                string fileName = GenerateFileName();
+                string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
                 ValidateExistingPendingFolder();
 
                 byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
@@ -42,28 +44,42 @@ namespace StoreFiles.API.Services
             }
         }
 
-        private string GenerateFileName()
+        private string GenerateFileName(int idUser, int idApp)
         {
+            string placeholderName = "[DATE]-[GUID]-[ID_USER]-[ID-APP]";
             string fileName = string.Empty;
 
+            string dateFile = DateTime.Now.ToString("ddMMMMyyyy").ToUpper();
             string guidFile = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
-            string dateFile = DateTime.Now.ToString("ddMMMMyyyy-").ToUpper();
 
-            fileName = dateFile + guidFile;
+            placeholderName = placeholderName.Replace("[DATE]", dateFile);
+            placeholderName = placeholderName.Replace("[GUID]", guidFile);
+            placeholderName = placeholderName.Replace("[ID_USER]", idUser.ToString());
+            placeholderName = placeholderName.Replace("[ID-APP]", idApp.ToString());
+
+            fileName = placeholderName;
 
             return fileName;
         }
 
-        public string[] GetPendingFiles()
+        public string[] GetPendingFiles(PendingFileQueryFilter pendingFileQueryFilter)
         {
             try
             {
+                var placeholderSearch = "-[ID-USER]-[ID-APP]";
+                List<String> files = new List<String>();
+
+                placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
+                placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
+
                 //Elimina los archivos, manteniendo los archivos de los ultimos {n} dias según configuracion appsettings
                 CleanFolderSignedFiles();
                 ValidateExistingPendingFolder();
 
                 string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.pdf");
-                List<String> files = new List<String>();
+
+                //Selecciona los archivos por IdUser y IdApp
+                filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
 
                 for (int i = 0; i < filesTemp.Length; i++)
                 {

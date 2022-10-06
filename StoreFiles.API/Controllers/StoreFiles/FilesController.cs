@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StoreFiles.API.DTOs.PostFile;
 using StoreFiles.API.DTOs.PostFileSigned;
+using StoreFiles.API.QueryFilters;
 using StoreFiles.API.Services;
 using System;
 using System.IO;
@@ -22,15 +23,20 @@ namespace StoreFiles.API.Controllers.StoreFiles
         [HttpPost]
         public IActionResult PostFile(PostFileDto postFileDto)
         {
-            string guidFileName = _storeFileService.StoreFile(postFileDto);    
+            if (postFileDto.IdApp != 0 && postFileDto.IdUser != 0)
+            {
+                string guidFileName = _storeFileService.StoreFile(postFileDto);
 
-            return Ok( new { guidFileName });
+                return Ok(new { guidFileName });
+            }
+            else
+                return BadRequest(new { Error = "Debe indicar el id de usuario y el id de aplicación." });
         }
 
         [HttpGet]
-        public IActionResult GetFiles()
+        public IActionResult GetFiles([FromQuery]PendingFileQueryFilter pendingFileQueryFilter)
         {
-            string[] fileNames = _storeFileService.GetPendingFiles();
+            string[] fileNames = _storeFileService.GetPendingFiles(pendingFileQueryFilter);
 
             if (fileNames.Length > 0)
                 return Ok(new { Message = "¡ Archivos Pendientes !", PendingFiles = fileNames });
