@@ -23,10 +23,10 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             _domain = configuration["APIStoreFiles:Domain"].ToString();
         }
 
-        public async Task<(bool, string[])> GetPendingFiles()
+        public async Task<(bool, string[])> GetPendingFiles(int idUser, int idApp)
         {
             string[] fileNamesPending = null;
-            string url = GenerateUrl("api/Files");
+            string url = GenerateUrl($"api/Files?idUser={idUser}&idApp={idApp}");
             var response = await httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)

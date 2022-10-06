@@ -7,6 +7,7 @@ using ITSignerWebComponent.SignApp.Data;
 using ITSignerWebComponent.SignApp.Error;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using StoreFiles.API.DTOs.PostFileSigned;
@@ -33,6 +34,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
         private NavigationManager UriHelper { get; set; }
         [Inject]
         private IConfiguration configuration { get; set; }
+        
+        [Inject]
+        private NavigationManager NavManager { get; set; }
 
         [Inject]
         public IErrorService _errorService { get; set; }
@@ -46,8 +50,12 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
         public string guidFileSelected { get; set; }
         public List<string> SelectedFiles { get; set; } = new();
         public bool FlagAPIFiles { get; set; } = false;
-        protected override async void OnInitialized()
+        public int IdUser { get; set; } = 0;
+        public int IdApp { get; set; } = 0;
+        protected override void OnInitialized()
         {
+            GetQueryParameters();
+
             var flagActivatedLicense = _apiService.LoadLicense();
 
             if (flagActivatedLicense)
@@ -55,6 +63,17 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                 LoadValidCertificatesAuthorities();
                 FlagActivatedLicense = true;
             }
+        }
+
+        private void GetQueryParameters()
+        {
+            var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idUser", out var _idUser))
+                IdUser = Convert.ToInt32(_idUser);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("idApp", out var _idApp))
+                IdApp = Convert.ToInt32(_idApp);
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -74,7 +93,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
             {
                 try
                 {
-                    var response = await _apiStoreFilesService.GetPendingFiles();
+                    var response = await _apiStoreFilesService.GetPendingFiles(IdUser, IdApp);
                     if (response.Item2 is not null)
                     {
                         PendingFiles = response.Item2;
