@@ -175,7 +175,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                                     {
                                         this.PreSignedDto.PdfToSign = response.Item2;
                                         this.PreSignedDto.Pem = pem;
-                                    
+                                        this.PreSignedDto.Visible = Convert.ToBoolean(configuration["SignatureVisible:Flag"]);
+
+
                                         if (!await SignDocument(fileName))
                                         {
                                             await _swalService.FireAsync("Error", "Ha ocurrido un error cargando y firmando el archivo", "error");

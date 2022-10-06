@@ -7,5 +7,6 @@ namespace ITSignerWebComponent.Core.DTOs.Signer.PreSigned
         //[Required(ErrorMessage = "Debe seleccionar el documento a firmar")]
         public string PdfToSign { get; set; }
         public string Pem { get; set; }
+        public bool Visible { get; set; }
     }
 }

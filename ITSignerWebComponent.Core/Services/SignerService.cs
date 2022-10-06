@@ -31,7 +31,8 @@ namespace ITSignerWebComponent.Core.Services
                 SignatureFieldName = _signatureFieldName,
                 SignatureCreator = "No Disponible",
                 Location = "Bogota D.C, Colombia",
-                Reason = "Signature ITSign"
+                Reason = "Signature ITSign",
+                Visible = signedDto.Visible
             };
 
             return signerDigitalCertificate.PreparePDFAndGetHash(infoData);
