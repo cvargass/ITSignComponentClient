@@ -8,6 +8,7 @@
 
 /StoreFiles.API/PendingFiles
 /StoreFiles.API/SignedFiles
+/StoreFiles.API/.config
 
 # User-specific files
 *.suo
