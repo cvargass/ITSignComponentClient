@@ -3,7 +3,7 @@ using StoreFiles.API.DTOs.PostFileSigned;
 using StoreFiles.API.QueryFilters;
 using System;
 
-namespace StoreFiles.API.Services
+namespace StoreFiles.API.Services.StoreFiles
 {
     public interface IStoreFileService
     {

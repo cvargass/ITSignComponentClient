@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace StoreFiles.API.Services
+namespace StoreFiles.API.Services.StoreFiles
 {
     public class StoreFileService : IStoreFileService
     {
@@ -67,7 +67,7 @@ namespace StoreFiles.API.Services
             try
             {
                 var placeholderSearch = "-[ID-USER]-[ID-APP]";
-                List<String> files = new List<String>();
+                List<string> files = new List<string>();
 
                 placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
                 placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
@@ -83,7 +83,7 @@ namespace StoreFiles.API.Services
 
                 for (int i = 0; i < filesTemp.Length; i++)
                 {
-                    files.Add(filesTemp[i].Replace(filesTemp[i].Substring(0, _pendingFilesPath.Length),""));
+                    files.Add(filesTemp[i].Replace(filesTemp[i].Substring(0, _pendingFilesPath.Length), ""));
                 }
 
                 return files.ToArray();
@@ -161,7 +161,7 @@ namespace StoreFiles.API.Services
                 var daysConfigured = _configuration["KeepFiles:last-days"];
 
                 if (daysConfigured != null)
-                 keepFileDays = Convert.ToInt32(daysConfigured);
+                    keepFileDays = Convert.ToInt32(daysConfigured);
 
                 if (Directory.Exists(_signedFilePath))
                 {
