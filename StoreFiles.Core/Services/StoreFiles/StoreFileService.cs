@@ -47,9 +47,9 @@ namespace StoreFiles.API.Services.StoreFiles
 
         private string GenerateFileName(int idUser, int idApp)
         {
-            string placeholderName = "[DATE]-[GUID]-[ID_USER]-[ID-APP]";
+            //string placeholderName = "[DATE]-[GUID]-[ID_USER]-[ID-APP]";
+            string placeholderName = "[DATE]-[GUID]-[ID-APP]-[ID_USER]";
             string fileName = string.Empty;
-
             string dateFile = DateTime.Now.ToString("ddMMMMyyyy").ToUpper();
             string guidFile = Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
 
@@ -67,7 +67,8 @@ namespace StoreFiles.API.Services.StoreFiles
         {
             try
             {
-                var placeholderSearch = "-[ID-USER]-[ID-APP]";
+                //var placeholderSearch = "-[ID-USER]-[ID-APP]";
+                var placeholderSearch = "-[ID-APP]-[ID-USER]";
                 List<string> files = new List<string>();
 
                 placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
