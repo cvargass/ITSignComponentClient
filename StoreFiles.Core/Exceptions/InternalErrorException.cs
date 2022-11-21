@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StoreFiles.API.Exceptions
+namespace StoreFiles.Core.Exceptions
 {
     public class InternalErrorException : Exception
     {

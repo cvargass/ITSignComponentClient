@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using StoreFiles.API.DTOs.PostFile;
-using StoreFiles.API.DTOs.PostFileSigned;
-using StoreFiles.API.Exceptions;
-using StoreFiles.API.QueryFilters;
+using StoreFiles.Core.DTOs.PostFile;
+using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.Exceptions;
+using StoreFiles.Core.QueryFilters;
+using StoreFiles.Core.Services.StoreFiles;
 using System;
 using System.Collections.Generic;
 using System.IO;

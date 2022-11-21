@@ -1,9 +1,8 @@
-﻿using StoreFiles.API.DTOs.PostFile;
-using StoreFiles.API.DTOs.PostFileSigned;
-using StoreFiles.API.QueryFilters;
-using System;
+﻿using StoreFiles.Core.DTOs.PostFile;
+using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.QueryFilters;
 
-namespace StoreFiles.API.Services.StoreFiles
+namespace StoreFiles.Core.Services.StoreFiles
 {
     public interface IStoreFileService
     {

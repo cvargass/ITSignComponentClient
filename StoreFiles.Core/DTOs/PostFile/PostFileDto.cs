@@ -1,4 +1,4 @@
-﻿namespace StoreFiles.API.DTOs.PostFile
+﻿namespace StoreFiles.Core.DTOs.PostFile
 {
     public class PostFileDto
     {

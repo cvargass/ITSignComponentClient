@@ -1,4 +1,4 @@
-﻿namespace StoreFiles.API.QueryFilters
+﻿namespace StoreFiles.Core.QueryFilters
 {
     public class PendingFileQueryFilter
     {

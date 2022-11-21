@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using StoreFiles.API.Exceptions;
+using StoreFiles.Core.Exceptions;
 using System.Net;
 
-namespace StoreFiles.API.Filters
+namespace StoreFiles.Core.Filters
 {
     public class GlobalExceptionFilter : IExceptionFilter
     {

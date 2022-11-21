@@ -1,4 +1,4 @@
-﻿namespace StoreFiles.API.DTOs.PostFileSigned
+﻿namespace StoreFiles.Core.DTOs.PostFileSigned
 {
     public class PostFileSignedDto
     {

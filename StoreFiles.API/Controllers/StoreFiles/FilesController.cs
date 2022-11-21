@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using StoreFiles.API.DTOs.PostFile;
-using StoreFiles.API.DTOs.PostFileSigned;
-using StoreFiles.API.QueryFilters;
-using StoreFiles.API.Services;
+﻿using Microsoft.AspNetCore.Mvc;
+using StoreFiles.Core.DTOs.PostFile;
+using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.QueryFilters;
+using StoreFiles.Core.Services.StoreFiles;
 using System;
-using System.IO;
 
 namespace StoreFiles.API.Controllers.StoreFiles
 {
