@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
-using StoreFiles.API.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.PostFileSigned;
 using System;
 using System.Collections.Generic;
 using System.IO;

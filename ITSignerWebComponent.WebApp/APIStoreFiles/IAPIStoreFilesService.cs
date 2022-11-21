@@ -1,5 +1,5 @@
-﻿using StoreFiles.API.DTOs.PostFile;
-using StoreFiles.API.DTOs.PostFileSigned;
+﻿using StoreFiles.Core.DTOs.PostFile;
+using StoreFiles.Core.DTOs.PostFileSigned;
 using System.Threading.Tasks;
 
 namespace ITSignerWebComponent.SignApp.APIStoreFiles

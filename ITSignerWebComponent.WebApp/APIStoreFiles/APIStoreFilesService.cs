@@ -1,9 +1,8 @@
 ﻿using ITSignerWebComponent.SignApp.Responses.APIStoreResponses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
-using StoreFiles.API.DTOs.PostFile;
-using StoreFiles.API.DTOs.PostFileSigned;
-using System;
+using StoreFiles.Core.DTOs.PostFile;
+using StoreFiles.Core.DTOs.PostFileSigned;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;

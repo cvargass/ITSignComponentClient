@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ITSignerWebComponent.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreFiles.API", "StoreFiles.API\StoreFiles.API.csproj", "{87358402-0CAC-4842-A308-7B8BC7670D0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoreFiles.Core", "StoreFiles.Core\StoreFiles.Core.csproj", "{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{87358402-0CAC-4842-A308-7B8BC7670D0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87358402-0CAC-4842-A308-7B8BC7670D0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87358402-0CAC-4842-A308-7B8BC7670D0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
