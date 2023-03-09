@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using StoreFiles.API.Services.StoreFiles;
 using StoreFiles.Core.Filters;
 using StoreFiles.Core.Options;
+using StoreFiles.Core.Services.Cades;
 using StoreFiles.Core.Services.Logger;
 using StoreFiles.Core.Services.Sign;
 using StoreFiles.Core.Services.StoreFiles;
@@ -34,7 +35,8 @@ namespace StoreFiles.API
             services.AddTransient<IStoreFileService, StoreFileService>();
             services.AddTransient<ISignService, SignService>();
             services.AddTransient<ILoggerService, LoggerService>();
-            
+            services.AddTransient<ICadesService, CadesService>();
+
             services.Configure<SignOptions>(Configuration.GetSection("SignConfigurations"));
 
             services.AddSwaggerGen(c =>
