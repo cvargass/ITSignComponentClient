@@ -50,3 +50,11 @@ log = function (message) {
 cleanLocalStorage = function () {
     window.cancelHandler()
 }
+
+downloadFileP7z = function (fileBase64, filename) {
+    const downloadLink = document.createElement('a');
+
+    downloadLink.href = `data:;base64,${fileBase64}`;
+    downloadLink.download = filename + ".p7z";
+    downloadLink.click();
+}

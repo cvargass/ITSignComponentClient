@@ -1,6 +1,7 @@
 ﻿using ITSignerWebComponent.SignApp.Responses.APIStoreResponses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
+using StoreFiles.Core.DTOs.Cades;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using System.Net.Http;
@@ -134,5 +135,26 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
 
             return flag;
         }
+
+        public async Task<CadesFileResponse> SignCadesFile(CadesFileDto cadesFileDto)
+        {
+            string guidFile = string.Empty;
+            string url = GenerateUrl("api/Cades/sign");
+            CadesFileResponse cadesFileResponse = null;
+
+            var response = await httpClient.PostAsJsonAsync(url, cadesFileDto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                cadesFileResponse = await response.Content.ReadFromJsonAsync<CadesFileResponse>();
+            }
+            else
+            {
+                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
+            }
+
+            return cadesFileResponse;
+        }
+
     }
 }

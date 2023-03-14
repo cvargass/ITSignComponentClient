@@ -1,0 +1,22 @@
+﻿@page "/cades";
+@using Microsoft.AspNetCore.Mvc.Rendering;
+@layout AppLayout;
+
+<div class="container p-3">
+    <div class="border rounded position-relative" style="background-color:#f7f7f9">
+        <div id="form-signed-disabled" class="position-absolute h-100 w-80"></div>
+
+        <div class="m-3 d-flex justify-content-center align-items-center">
+            <form method="post" enctype="multipart/form-data">
+                <div class="row">
+                    <label class="col-md-12 col-form-label">Archivo de Texto a Firmar:</label>
+                </div>
+                <InputFile accept=".txt, .p7z" OnChange="@OnInputFileChange" />
+
+                <div class="col-12 mt-3">
+                    <button type="button" style="width:290px; height:85px" class="btn btn-success" @onclick="onSignCadesFile">Firmar Archivo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
