@@ -6,15 +6,37 @@
     <div class="border rounded position-relative" style="background-color:#f7f7f9">
         <div id="form-signed-disabled" class="position-absolute h-100 w-80"></div>
 
-        <div class="m-3 d-flex justify-content-center align-items-center">
+        <div class="m-3">
             <form method="post" enctype="multipart/form-data">
                 <div class="row">
                     <label class="col-md-12 col-form-label">Archivo de Texto a Firmar:</label>
                 </div>
                 <InputFile accept=".txt, .p7z" OnChange="@OnInputFileChange" />
 
-                <div class="col-12 mt-3">
-                    <button type="button" style="width:290px; height:85px" class="btn btn-success" @onclick="onSignCadesFile">Firmar Archivo</button>
+                <div class="m-3">
+                    <label class="col-md-12 col-form-label">Certificado:</label>
+                </div>
+                <div class="row">
+                        <div class="col-md-6">
+                            <peculiar-fortify-certificates id="fortify-component" hide-footer language="es" [filters]="{onlyWithPrivateKey: true, keyUsage: ['digitalSignature'], expired: false }">
+                            </peculiar-fortify-certificates>
+                        </div>
+                        <div id="wrapper-certificate-selected" class="col-md-6 p-2 d-flex justify-content-center align-items-center invisible">
+                            <div class="alert alert-success" role="alert">
+                                <p class="text-center">Certificado Seleccionado</p>
+                                <img src="./images/certificate-icon.png" style="width:220px" alt="Certificate Selected Icon" />
+                            </div>
+                        </div>
+                </div>
+
+                <div class="col-12 mt-3 d-flex justify-content-center align-items-center">
+                    <button type="button" style="width:290px; height:85px" class="btn btn-success" id="sign-btn-view"  @onclick="onSignCadesFileV2">Firmar Archivo</button>
+                    <div id="loading-btn-view" class="d-none">
+                        <div>
+                            Firmando Documentos...
+                        </div>
+                        <div class="spinner-grow spinner-grow-sm" style="width: 3rem; height: 3rem;" role="status"></div>
+                    </div>
                 </div>
             </form>
         </div>
