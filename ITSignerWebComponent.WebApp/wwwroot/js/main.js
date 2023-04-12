@@ -6,8 +6,11 @@
 
 setInvisibleCertificateSelectedIcon = function () {
     var certificateSelectedIcon = document.getElementById("wrapper-certificate-selected");
-    certificateSelectedIcon.classList.remove("visible");
-    certificateSelectedIcon.classList.add("invisible");
+
+    if (certificateSelectedIcon) {
+        certificateSelectedIcon.classList.remove("visible");
+        certificateSelectedIcon.classList.add("invisible");
+    }
 }
 
 

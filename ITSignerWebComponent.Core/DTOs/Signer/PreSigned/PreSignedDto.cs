@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ITSignerWebComponent.Core.DTOs.Signer.InfoCertificate;
+using System.ComponentModel.DataAnnotations;
 
 namespace ITSignerWebComponent.Core.DTOs.Signer.PreSigned
 {
@@ -8,5 +9,6 @@ namespace ITSignerWebComponent.Core.DTOs.Signer.PreSigned
         public string PdfToSign { get; set; }
         public string Pem { get; set; }
         public bool Visible { get; set; }
+        public InfoCertificateDto InfoCertificate { get; set; }
     }
 }

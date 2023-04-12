@@ -1,6 +1,7 @@
 ﻿using CurrieTechnologies.Razor.SweetAlert2;
 using ITSignerWebComponent.Core.DTOs.License;
 using ITSignerWebComponent.Core.DTOs.Signer.EmbedSignature;
+using ITSignerWebComponent.Core.DTOs.Signer.InfoCertificate;
 using ITSignerWebComponent.Core.DTOs.Signer.PreSigned;
 using ITSignerWebComponent.SignApp.APIStoreFiles;
 using ITSignerWebComponent.SignApp.Data;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.Sign;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -279,6 +281,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                         try
                         {
 
+                            //if (true)
                             if (await isValidCertificateAuthority())
                             {
                                 await _jsRuntime.InvokeVoidAsync("setLoadingSigningButton");
@@ -289,8 +292,23 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
 
                                     if (response.Item1)
                                     {
+                                        var infoCertificate = await _jsRuntime.InvokeAsync<string[]>("getInformationCertificate");
+
+                                        var commonName = infoCertificate[0];
+                                        var locality = infoCertificate[1];
+                                        var state = infoCertificate[2];
+                                        var countryName = infoCertificate[3];
+                                        var organizationUnit = infoCertificate[4];
+                                        var streetAddress = infoCertificate[5];
+
+                                        if (locality is null)
+                                            locality = state + " - " + countryName;
+
                                         this.PreSignedDto.PdfToSign = response.Item2;
                                         this.PreSignedDto.Pem = pem;
+                                        this.PreSignedDto.InfoCertificate = new InfoCertificateDto();
+                                        this.PreSignedDto.InfoCertificate.Location = commonName + " - " + locality;
+                                        this.PreSignedDto.InfoCertificate.Reason = organizationUnit + " / " + streetAddress;
 
                                         if (!await SignDocument(fileName))
                                         {

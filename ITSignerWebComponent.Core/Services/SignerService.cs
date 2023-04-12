@@ -30,8 +30,8 @@ namespace ITSignerWebComponent.Core.Services
                 PDFToSign = signedDto.PdfToSign,
                 SignatureFieldName = _signatureFieldName,
                 SignatureCreator = "No Disponible",
-                Location = "Bogota D.C, Colombia",
-                Reason = "Signature ITSign",
+                Location = signedDto.InfoCertificate.Location,
+                Reason = signedDto.InfoCertificate.Reason,
                 Visible = signedDto.Visible
             };
 

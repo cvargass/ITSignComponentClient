@@ -126,6 +126,65 @@ window.isValidAuthorityCertificate = async function (validCertificateAuthority) 
     return isValid;
 }
 
+window.getInformationCertificate = async function () {
+
+    var arrDataCertificate = ["CommonName", "Locality", "State", "CountryName", "Organization Unit", "Street Address"];
+    let commonNameIdentifier = "CN=";
+    let localityIdentifier = "L=";
+    let stateIdentifier = "ST=";
+    let countryNameIdentifier = "C=";
+    let organizationUnitIdentifier = "OU=";
+    let streetAddressIdentifier = "2.5.4.9=";
+
+    var providerId = window.localStorage.getItem("ProviderId");
+    var certificateId = window.localStorage.getItem("CertificateId");
+
+    const provider = await ws.getCrypto(providerId);
+    const cert = await provider.certStorage.getItem(certificateId);
+
+
+    if (cert._subjectName.length !== null) {
+        console.log(cert._subjectName);
+        console.log(cert._subjectName.split(","));
+
+        let arrInfoCertificate = cert._subjectName.split(",");
+
+        let commonName = arrInfoCertificate.find(x => x.toUpperCase().includes(commonNameIdentifier));
+        let locality = arrInfoCertificate.find(x => x.toUpperCase().includes(localityIdentifier));
+        let state = arrInfoCertificate.find(x => x.toUpperCase().includes(stateIdentifier));
+        let countryName = arrInfoCertificate.find(x => x.toUpperCase().includes(countryNameIdentifier));
+        let organizationUnit = arrInfoCertificate.find(x => x.toUpperCase().includes(organizationUnitIdentifier));
+        let streetAddress = arrInfoCertificate.find(x => x.toUpperCase().includes(streetAddressIdentifier));
+
+        if (commonName) {
+            arrDataCertificate[0] = commonName.replace(commonNameIdentifier, "");
+        }
+
+        if (locality) {
+            arrDataCertificate[1] = locality.replace(localityIdentifier, "");
+        }
+
+        if (state) {
+            arrDataCertificate[2] = state.replace(stateIdentifier, "");
+        }
+
+        if (countryName) {
+            arrDataCertificate[3] = countryName.replace(countryNameIdentifier, "");
+        }
+
+        if (organizationUnit) {
+            arrDataCertificate[4] = organizationUnit.replace(organizationUnitIdentifier, "");
+        }
+
+        if (streetAddress) {
+            arrDataCertificate[5] = streetAddress.replace(streetAddressIdentifier, "");
+        }
+    }
+
+
+    return arrDataCertificate;
+}
+
 
 window.getPemSelected = async function () {
     return window.localStorage.getItem("PEMSelected");
