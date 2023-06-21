@@ -14,5 +14,9 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
         Task<(bool, string)> PostFile(PostFileDto postFileDto);
         Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto);
         Task<CadesFileResponse> SignCadesFile(CadesFileDto cadesFileDto);
+        Task<(bool, string[])> GetCadesPendingFiles(int idUser, int idApp);
+        Task<(bool, string)> GetCadesPendingFile(string guidFile);
+        Task<(bool, string)> PostCadesFile(PostFileDto postFileDto);
+        Task<bool> PostCadesSignedFile(PostFileSignedDto postFileSignedDto);
     }
 }

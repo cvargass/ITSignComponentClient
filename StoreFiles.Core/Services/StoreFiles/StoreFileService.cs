@@ -45,6 +45,30 @@ namespace StoreFiles.API.Services.StoreFiles
             }
         }
 
+        public string StoreFileCades(PostFileDto postFileDto)
+        {
+            try
+            {
+                string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
+                ValidateExistingPendingFolder();
+
+                byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
+                string filePath = GeneratePathPendingFile(fileName, true);
+
+                using var writer = new BinaryWriter(File.OpenWrite(filePath));
+                writer.Write(file);
+
+                return fileName;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("The input is not a valid Base-64"))
+                    throw new InternalErrorException("El string-base64 del archivo no es válido");
+                else
+                    throw new InternalErrorException(ex.Message);
+            }
+        }
+
         private string GenerateFileName(int idUser, int idApp)
         {
             //string placeholderName = "[DATE]-[GUID]-[ID_USER]-[ID-APP]";
@@ -78,7 +102,40 @@ namespace StoreFiles.API.Services.StoreFiles
                 CleanFolderSignedFiles();
                 ValidateExistingPendingFolder();
 
-                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.pdf");
+                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(".pdf")).ToArray();
+                    
+                //Selecciona los archivos por IdUser y IdApp
+                filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
+
+                for (int i = 0; i < filesTemp.Length; i++)
+                {
+                    files.Add(filesTemp[i].Replace(filesTemp[i].Substring(0, _pendingFilesPath.Length), ""));
+                }
+
+                return files.ToArray();
+            }
+            catch (Exception ex)
+            {
+                throw new InternalErrorException(ex.Message);
+            }
+        }
+
+        public string[] GetCadesPendingFiles(PendingFileQueryFilter pendingFileQueryFilter)
+        {
+            try
+            {
+                //var placeholderSearch = "-[ID-USER]-[ID-APP]";
+                var placeholderSearch = "-[ID-APP]-[ID-USER]";
+                List<string> files = new List<string>();
+
+                placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
+                placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
+
+                //Elimina los archivos, manteniendo los archivos de los ultimos {n} dias según configuracion appsettings
+                CleanFolderSignedFiles();
+                ValidateExistingPendingFolder();
+
+                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(".txt")).ToArray();
 
                 //Selecciona los archivos por IdUser y IdApp
                 filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
@@ -111,6 +168,21 @@ namespace StoreFiles.API.Services.StoreFiles
             return (existingFile, bytesFile);
         }
 
+        public (bool flag, byte[] bytesFile) GetCadesFile(string guidFile, bool isSigned)
+        {
+            bool existingFile = false;
+            byte[] bytesFile = null;
+            string pathFile = isSigned ? GeneratePathSignedFile(guidFile, true) : GeneratePathPendingFile(guidFile, true);
+
+            if (File.Exists(pathFile))
+            {
+                existingFile = true;
+                bytesFile = File.ReadAllBytes(pathFile);
+            }
+
+            return (existingFile, bytesFile);
+        }
+
         public void StoreFileSigned(PostFileSignedDto postFileSignedDto)
         {
             try
@@ -132,14 +204,41 @@ namespace StoreFiles.API.Services.StoreFiles
             }
         }
 
-        private string GeneratePathPendingFile(string guidFile)
+        public void StoreCadesFileSigned(PostFileSignedDto postFileSignedDto)
         {
-            return _pendingFilesPath += $"{guidFile}.pdf";
+            try
+            {
+                ValidateExistingSignedFolder();
+
+                byte[] file = Convert.FromBase64String(postFileSignedDto.PdfSignedBase64);
+                string filePendingPath = GeneratePathPendingFile(postFileSignedDto.PdfGuid, true);
+                string fileSignedPath = GeneratePathSignedFile(postFileSignedDto.PdfGuid, true);
+
+                File.Delete(filePendingPath);
+
+                using var writer = new BinaryWriter(File.OpenWrite(fileSignedPath));
+                writer.Write(file);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalErrorException(ex.Message);
+            }
         }
 
-        private string GeneratePathSignedFile(string guidFile)
+        private string GeneratePathPendingFile(string guidFile, bool isCadesFile = false)
         {
-            return _signedFilePath += $"{guidFile}.pdf";
+            if (isCadesFile)
+                return _pendingFilesPath += $"{guidFile}.txt";
+            else
+                return _pendingFilesPath += $"{guidFile}.pdf";
+        }
+
+        private string GeneratePathSignedFile(string guidFile, bool isCadesFile = false)
+        {
+            if (isCadesFile)
+                return _signedFilePath += $"{guidFile}.p7z";
+            else
+                return _signedFilePath += $"{guidFile}.pdf";
         }
 
         private void ValidateExistingPendingFolder()

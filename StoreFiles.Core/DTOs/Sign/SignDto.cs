@@ -1,4 +1,5 @@
 ﻿using StoreFiles.Core.Entities.AxisPosition;
+using StoreFiles.Core.Entities.InformationTsa;
 
 namespace StoreFiles.Core.DTOs.Sign
 {
@@ -11,5 +12,6 @@ namespace StoreFiles.Core.DTOs.Sign
         public string PasswordCertificate { get; set; }
         public AxisPosition SignPosition { get; set; }
         public AxisPosition QRPosition { get; set; }
+        public InformationTsa InformationTsa { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using SignLib.Certificates;
 using SignLib.Pdf;
 using StoreFiles.Core.DTOs.Sign;
 using StoreFiles.Core.Entities.AxisPosition;
+using StoreFiles.Core.Entities.InformationTsa;
 using StoreFiles.Core.Options;
 using StoreFiles.Core.Services.Logger;
 using StoreFiles.Core.Services.Utils.WriterQR;
@@ -75,6 +76,9 @@ namespace StoreFiles.Core.Services.Sign
                 ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(_SignOptions.UrlSignCertificate, _SignOptions.PasswordCertificate);
 
                 bytesFileSigned = ps.ApplyDigitalSignature();
+
+                if (signDto.InformationTsa is not null)
+                    bytesFileSigned = ApplyTSASignature(bytesFileSigned, signDto.InformationTsa);
             }
             catch (Exception ex)
             {
@@ -82,6 +86,27 @@ namespace StoreFiles.Core.Services.Sign
             }
 
             return bytesFileSigned;
+        }
+
+        public byte[] ApplyTSASignature(byte[] pdf, InformationTsa informationTsa) 
+        {
+            byte[] bytesTSASignedPDF = null;
+            try
+            {
+                PdfSignature ps = new PdfSignature(_SignOptions.SerialNumber);
+                ps.LoadPdfDocument(pdf);
+
+                //Timestamp Signature
+                ps.TimeStamping.ServerUrl = new Uri(informationTsa.Url);
+                ps.TimeStamping.UserName = informationTsa.User;
+                ps.TimeStamping.Password = informationTsa.Password;
+                bytesTSASignedPDF = ps.ApplyTimestampSignature();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogExceptionError(ex.Message, ex);
+            }
+            return bytesTSASignedPDF;
         }
 
         private SignaturePosition GetSignPosition(int? idPositionSign)
