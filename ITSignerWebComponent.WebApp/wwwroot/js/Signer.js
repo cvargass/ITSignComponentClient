@@ -144,8 +144,8 @@ window.getInformationCertificate = async function () {
 
 
     if (cert._subjectName.length !== null) {
-        console.log(cert._subjectName);
-        console.log(cert._subjectName.split(","));
+        //console.log(cert._subjectName);
+        //console.log(cert._subjectName.split(","));
 
         let arrInfoCertificate = cert._subjectName.split(",");
 
@@ -200,7 +200,7 @@ window.generateCMSToEmbed = async function (dataToSign) {
         provider.sign = provider.subtle.sign.bind(provider.subtle);
 
         let nameEngine = 'new3ngin3' + window.generateGuid() + Date();
-
+        
         pkijs.setEngine(
             nameEngine,
             provider,
@@ -266,7 +266,7 @@ window.generateCMSToEmbed = async function (dataToSign) {
         var result = cms.toSchema().toBER(false);
 
         var resultBase64 = await window.convertArrayBufferToBase64(result);
-
+        console.log("Done Result: " + resultBase64);
         return resultBase64;
     } catch (error) {
         alert('Failed Signing CMS - Errors: \n' + error);
