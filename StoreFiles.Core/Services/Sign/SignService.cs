@@ -10,6 +10,8 @@ using StoreFiles.Core.Services.Logger;
 using StoreFiles.Core.Services.Utils.WriterQR;
 using System;
 using System.Drawing;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace StoreFiles.Core.Services.Sign
@@ -19,7 +21,7 @@ namespace StoreFiles.Core.Services.Sign
         private readonly ILoggerService _logger;
         private readonly SignOptions _SignOptions;
         private readonly IWriterQRService _writerQRService;
-        private readonly string _textQr;
+        private string _textQr;
 
         public SignService(ILoggerService logger,
                            IOptions<SignOptions> options,
@@ -43,8 +45,10 @@ namespace StoreFiles.Core.Services.Sign
             {
                 PdfSignature ps = new PdfSignature(_SignOptions.SerialNumber);
 
+                string certificateInfo = GetCertificateInformation(signDto);
+
                 if (signDto.QRPosition is not null)
-                    signDto.File = WriteQRInPDF(signDto.File, signDto.QRPosition, _textQr);
+                    signDto.File = WriteQRInPDF(signDto.File, signDto.QRPosition, certificateInfo);
 
                 //load the PDF document
                 ps.LoadPdfDocument(signDto.File);
@@ -138,6 +142,56 @@ namespace StoreFiles.Core.Services.Sign
             bytesPdf = _writerQRService.WriteQRWithCoordinates(bytesPdf, textQRUrlDoc, dataQrPosition);
 
             return bytesPdf;
+        }
+
+        public string GetCertificateInformation(SignDto signDto)
+        {
+            X509Certificate2 certificate = null;
+            string certificateInfo = String.Empty;
+
+            try
+            {
+                PdfSignature ps = new PdfSignature(_SignOptions.SerialNumber);
+
+                if (signDto.UrlSignCertificate is not null && signDto.PasswordCertificate is not null)
+                {
+                    _SignOptions.UrlSignCertificate = signDto.UrlSignCertificate;
+                    _SignOptions.PasswordCertificate = signDto.PasswordCertificate;
+                }
+
+                //Load the signature certificate from P12 file
+                ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(_SignOptions.UrlSignCertificate, _SignOptions.PasswordCertificate);
+                certificate = ps.DigitalSignatureCertificate;
+
+                if (certificate is not null)
+                {
+                    string[] itemsSubject = certificate.Subject.Split(",");
+                    string issuerName = string.Empty;
+
+                    issuerName = itemsSubject.Where(x => x.Contains("CN=")
+                                                                || x.Contains("SN=")).FirstOrDefault();
+                    if (issuerName is null)
+                        issuerName = "issuerName";
+                    else
+                    {
+                        issuerName = issuerName.Replace("CN=", "");
+                        issuerName = issuerName.Replace("SN=", "");
+                    }
+
+                    _textQr = _textQr.Replace("[NAME]", issuerName);
+                    _textQr = _textQr.Replace("[REASON]", _SignOptions.SigningReason);
+                    _textQr = _textQr.Replace("[LOCATION]", _SignOptions.SigningLocation);
+                    _textQr = _textQr.Replace("[DATE]", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK"));
+
+                    certificateInfo = _textQr;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogExceptionError(ex.Message, ex);
+            }
+
+            return certificateInfo;
         }
     }
 }
