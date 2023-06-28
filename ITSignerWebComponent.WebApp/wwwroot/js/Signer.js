@@ -266,7 +266,6 @@ window.generateCMSToEmbed = async function (dataToSign) {
         var result = cms.toSchema().toBER(false);
 
         var resultBase64 = await window.convertArrayBufferToBase64(result);
-        console.log("Done Result: " + resultBase64);
         return resultBase64;
     } catch (error) {
         alert('Failed Signing CMS - Errors: \n' + error);
