@@ -3,6 +3,7 @@ using ITSignerWebComponent.Core.DTOs.Signer.PreSigned;
 using ITSignerWebComponent.Core.Interfaces.Services;
 using SignerPDF.DigitalSignature.Core.DTOs.InfoDataDto;
 using SignerPDF.DigitalSignature.Core.Services;
+using StoreFiles.Core.Services.Utils.QRGenerator;
 using System;
 
 namespace ITSignerWebComponent.Core.Services
@@ -10,6 +11,13 @@ namespace ITSignerWebComponent.Core.Services
     public class SignerService : ISignerService
     {
         private readonly string _signatureFieldName = "SignatureITSign";
+        private readonly IQRGeneratorService _qrGeneratorService;
+
+        public SignerService(IQRGeneratorService qrGeneratorService)
+        {
+            _qrGeneratorService = qrGeneratorService;
+        }
+
         public (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto)
         {
             byte[] bytesPdf = Convert.FromBase64String(signedDto.PdfToSign);
@@ -23,6 +31,7 @@ namespace ITSignerWebComponent.Core.Services
         private (byte[] pdfWithSignPlaceholder, byte[] dataToSign) PreparePDFAndDataToSign(PreSignedDto signedDto)
         {
             SignerDigitalCertificate signerDigitalCertificate = new SignerDigitalCertificate();
+            byte[] bytesQR = _qrGeneratorService.GenerateQR(signedDto.InfoCertificate.Location + " - " + signedDto.InfoCertificate.Reason);
 
             var infoData = new InfoDataDto()
             {
@@ -32,7 +41,8 @@ namespace ITSignerWebComponent.Core.Services
                 SignatureCreator = "No Disponible",
                 Location = signedDto.InfoCertificate.Location,
                 Reason = signedDto.InfoCertificate.Reason,
-                Visible = signedDto.Visible
+                Visible = signedDto.Visible,
+                Image = bytesQR
             };
 
             return signerDigitalCertificate.PreparePDFAndGetHash(infoData);

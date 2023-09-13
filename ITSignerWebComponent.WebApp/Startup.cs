@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StoreFiles.Core.Services.Utils.QRGenerator;
 using System;
 
 namespace ITSignerWebComponent.SignApp
@@ -48,7 +49,8 @@ namespace ITSignerWebComponent.SignApp
             services.AddSingleton<ILoggerService, LoggerService>();
             services.AddTransient<IErrorService, ErrorService>();
             services.AddTransient<IEncryptorService, EncryptorService>();
-            
+            services.AddTransient<IQRGeneratorService, QRGeneratorService>();
+
             //Automapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -17,6 +17,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\StoreFiles.Core\StoreFiles.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="SignerPDF.DigitalSignature.Core">
 			<HintPath>Lib\SignerPDF.DigitalSignature.Core.dll</HintPath>
 		</Reference>
