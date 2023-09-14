@@ -214,6 +214,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                                         this.PreSignedDto.InfoCertificate = new InfoCertificateDto();
                                         this.PreSignedDto.InfoCertificate.Location = commonName + " - " + locality;
                                         this.PreSignedDto.InfoCertificate.Reason = organizationUnit + " / " + streetAddress;
+                                        this.PreSignedDto.InfoCertificate.DataCertificate = commonName + "\n" + locality + "\n" + countryName + "\n" + organizationUnit + "\n" + streetAddress + " / " + state + "\n" + " [DATE]";
 
                                         if (!await SignDocument(fileName))
                                         {

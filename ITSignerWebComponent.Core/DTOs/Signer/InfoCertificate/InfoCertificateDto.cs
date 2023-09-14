@@ -4,5 +4,6 @@
     {
         public string Reason { get; set; }
         public string Location { get; set; }
+        public string DataCertificate { get; set; }
     }
 }

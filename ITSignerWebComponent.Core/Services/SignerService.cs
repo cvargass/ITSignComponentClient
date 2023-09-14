@@ -31,7 +31,11 @@ namespace ITSignerWebComponent.Core.Services
         private (byte[] pdfWithSignPlaceholder, byte[] dataToSign) PreparePDFAndDataToSign(PreSignedDto signedDto)
         {
             SignerDigitalCertificate signerDigitalCertificate = new SignerDigitalCertificate();
-            byte[] bytesQR = _qrGeneratorService.GenerateQR(signedDto.InfoCertificate.Location + " - " + signedDto.InfoCertificate.Reason);
+
+            string infoCertificate = signedDto.InfoCertificate.DataCertificate;
+            infoCertificate = infoCertificate.Replace("[DATE]", DateTime.Now.ToString());
+
+            byte[] bytesQR = _qrGeneratorService.GenerateQR(infoCertificate);
 
             var infoData = new InfoDataDto()
             {
