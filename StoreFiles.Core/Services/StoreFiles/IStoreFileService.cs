@@ -1,7 +1,6 @@
 ﻿using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.QueryFilters;
-using System.Threading.Tasks;
 
 namespace StoreFiles.Core.Services.StoreFiles
 {
@@ -15,5 +14,6 @@ namespace StoreFiles.Core.Services.StoreFiles
         string[] GetCadesPendingFiles(PendingFileQueryFilter pendingFileQueryFilter);
         (bool flag, byte[] bytesFile) GetCadesFile(string guidFile, bool isSigned = false);
         void StoreCadesFileSigned(PostFileSignedDto postFileSignedDto);
+        void StoreFileSignedAPI(byte[] pdfSignedBase64);
     }
 }

@@ -10,8 +10,9 @@ namespace StoreFiles.Core.DTOs.Sign
         public bool SignatureVisible { get; set; } = true;
         public string UrlSignCertificate { get; set; }
         public string PasswordCertificate { get; set; }
-        public AxisPosition SignPosition { get; set; }
-        public AxisPosition QRPosition { get; set; }
+        public string WordKeySigning { get; set; }
+        //public AxisPosition SignPosition { get; set; }
+        //public AxisPosition QRPosition { get; set; }
         public InformationTsa InformationTsa { get; set; }
     }
 }

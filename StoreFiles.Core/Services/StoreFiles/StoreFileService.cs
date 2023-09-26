@@ -15,6 +15,7 @@ namespace StoreFiles.API.Services.StoreFiles
     {
         private string _pendingFilesPath = "./PendingFiles/";
         private string _signedFilePath = "./SignedFiles/";
+        private string _signedFileAPIPath = "./SignedFiles/API/";
         private readonly IConfiguration _configuration;
 
         public StoreFileService(IConfiguration configuration)
@@ -204,6 +205,23 @@ namespace StoreFiles.API.Services.StoreFiles
             }
         }
 
+        public void StoreFileSignedAPI(byte[] pdfSignedBase64)
+        {
+            try
+            {
+                ValidateExistingSignedFolderForAPI();
+
+                string fileSignedPath = GeneratePathSignedFileForAPI();
+
+                using var writer = new BinaryWriter(File.OpenWrite(fileSignedPath));
+                writer.Write(pdfSignedBase64);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalErrorException(ex.Message);
+            }
+        }
+
         public void StoreCadesFileSigned(PostFileSignedDto postFileSignedDto)
         {
             try
@@ -241,6 +259,12 @@ namespace StoreFiles.API.Services.StoreFiles
                 return _signedFilePath += $"{guidFile}.pdf";
         }
 
+        private string GeneratePathSignedFileForAPI()
+        {
+            string guidFile = Guid.NewGuid().ToString().ToUpper();
+            return _signedFileAPIPath += $"{guidFile}.pdf";
+        }
+
         private void ValidateExistingPendingFolder()
         {
             if (!Directory.Exists(_pendingFilesPath))
@@ -251,6 +275,12 @@ namespace StoreFiles.API.Services.StoreFiles
         {
             if (!Directory.Exists(_signedFilePath))
                 Directory.CreateDirectory(_signedFilePath);
+        }
+
+        private void ValidateExistingSignedFolderForAPI()
+        {
+            if (!Directory.Exists(_signedFileAPIPath))
+                Directory.CreateDirectory(_signedFileAPIPath);
         }
 
         private void CleanFolderSignedFiles()

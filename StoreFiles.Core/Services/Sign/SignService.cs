@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using iText.Kernel.Pdf.Canvas.Parser;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SignLib.Certificates;
 using SignLib.Pdf;
@@ -7,12 +8,20 @@ using StoreFiles.Core.Entities.AxisPosition;
 using StoreFiles.Core.Entities.InformationTsa;
 using StoreFiles.Core.Options;
 using StoreFiles.Core.Services.Logger;
+using StoreFiles.Core.Services.Utils.QRGenerator;
 using StoreFiles.Core.Services.Utils.WriterQR;
 using System;
-using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using iText.Kernel.Pdf;
+using System.IO;
+using iText.Kernel.Geom;
+using StoreFiles.Core.Services.Utils;
+using StoreFiles.Core.Services.Utils.TextLocationStrategy;
+using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.Services.StoreFiles;
+using StoreFiles.API.Services.StoreFiles;
 
 namespace StoreFiles.Core.Services.Sign
 {
@@ -22,16 +31,27 @@ namespace StoreFiles.Core.Services.Sign
         private readonly SignOptions _SignOptions;
         private readonly IWriterQRService _writerQRService;
         private string _textQr;
+        private readonly IQRGeneratorService _qrGeneratorService;
+        private readonly IUtilsService _utilsService;
+        private readonly bool _savePDFFilesAPI;
+        private readonly IStoreFileService _storeFileService;
 
         public SignService(ILoggerService logger,
                            IOptions<SignOptions> options,
                            IWriterQRService writerQRService,
-                           IConfiguration configuration)
+                           IConfiguration configuration,
+                           IQRGeneratorService qrGeneratorService,
+                           IUtilsService utilsService,
+                           IStoreFileService storeFileService)
         {
             _logger = logger;
             _SignOptions = options.Value;
             _writerQRService = writerQRService;
             _textQr = configuration["QrConfiguration:Text"].ToString();
+            _qrGeneratorService = qrGeneratorService;
+            _utilsService = utilsService;
+            _savePDFFilesAPI = Convert.ToBoolean(configuration["SignConfigurations:SavePDFFilesAPI"]);
+            _storeFileService = storeFileService;
         }
 
         public byte[] SignFile(SignDto signDto)
@@ -47,17 +67,30 @@ namespace StoreFiles.Core.Services.Sign
 
                 string certificateInfo = GetCertificateInformation(signDto);
 
-                if (signDto.QRPosition is not null)
-                    signDto.File = WriteQRInPDF(signDto.File, signDto.QRPosition, certificateInfo);
+                byte[] bytesQR = _qrGeneratorService.GenerateQR(certificateInfo);
+                var response = FindFirstLetterSigningKey(signDto.File, signDto.WordKeySigning);
+
+                //if (signDto.QRPosition is not null)
+                //    signDto.File = WriteQRInPDF(signDto.File, signDto.QRPosition, certificateInfo);
 
                 //load the PDF document
                 ps.LoadPdfDocument(signDto.File);
                 ps.SigningReason = _SignOptions.SigningReason;
                 ps.SigningLocation = _SignOptions.SigningLocation;
                 ps.VisibleSignature = signDto.SignatureVisible;
+                ps.SignatureImage = bytesQR;
+                ps.SignatureImageType = SignatureImageType.ImageAndText;
+
+
+                if (!string.IsNullOrEmpty(signDto.WordKeySigning))
+                {
+                    ps.SignatureAdvancedPosition = new System.Drawing.Rectangle(new System.Drawing.Point((int)response.InfoFirstLetterKey.GetX() - 10, (int)response.InfoFirstLetterKey.GetY() - 40), new System.Drawing.Size(80, 80));
+                    ps.SignaturePage = response.NumberPage;
+                }
 
                 if (ps.VisibleSignature)
-                {
+                {   
+                    /*
                     if (signDto.SignPosition is not null)
                     {
                         ps.SignatureAdvancedPosition = new Rectangle(new Point(signDto.SignPosition.CoordinateX, signDto.SignPosition.CoordinateY), new Size(80, 80));
@@ -66,6 +99,7 @@ namespace StoreFiles.Core.Services.Sign
                     {
                         ps.SignaturePosition = GetSignPosition(signDto.IdSignPosition);
                     }
+                    */
                 }
 
                 ps.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
@@ -83,6 +117,9 @@ namespace StoreFiles.Core.Services.Sign
 
                 if (signDto.InformationTsa is not null)
                     bytesFileSigned = ApplyTSASignature(bytesFileSigned, signDto.InformationTsa);
+
+                if (_savePDFFilesAPI)
+                    _storeFileService.StoreFileSignedAPI(bytesFileSigned);
             }
             catch (Exception ex)
             {
@@ -91,6 +128,33 @@ namespace StoreFiles.Core.Services.Sign
 
             return bytesFileSigned;
         }
+
+
+        private (Rectangle InfoFirstLetterKey, int NumberPage) FindFirstLetterSigningKey(byte[] file, string textToFind)
+        {
+            var response = _utilsService.TextExistInFile(file, textToFind);
+
+            if (response.exists)
+            {
+                using Stream pdfStream = new MemoryStream(file);
+                using PdfDocument pdfDocument = new PdfDocument(new PdfReader(pdfStream));
+
+                var textLocationStrategy = new TextLocationStrategy();
+
+                //Parse page 1 of the document above
+                var ex = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage((int)response.numberPage), textLocationStrategy);
+                var matrizCharacters = textLocationStrategy.objectResult;
+
+                var textCoordinates = _utilsService.FindCoordinatesText(matrizCharacters, textToFind);
+                var infoFirstLetterKey = textCoordinates.FirstOrDefault();
+
+                return (infoFirstLetterKey.Rectangule, (int)response.numberPage);
+            } else
+            {
+                throw new Exception("La 'wordKeySigning' no se encontró en el documento.");
+            }
+        }
+
 
         public byte[] ApplyTSASignature(byte[] pdf, InformationTsa informationTsa) 
         {
