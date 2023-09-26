@@ -17,25 +17,36 @@ namespace StoreFiles.API.Services.StoreFiles
         private string _signedFilePath = "./SignedFiles/";
         private string _signedFileAPIPath = "./SignedFiles/API/";
         private readonly IConfiguration _configuration;
+        private readonly double _allowedFileSizeMBComponent;
+        private readonly double _megaByte = 1e+6;
 
         public StoreFileService(IConfiguration configuration)
         {
             _configuration = configuration;
+            _allowedFileSizeMBComponent =  Convert.ToInt32(configuration["AllowedFileSizeMBComponent"]) * _megaByte;
         }
         public string StoreFile(PostFileDto postFileDto)
         {
             try
             {
-                string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
-                ValidateExistingPendingFolder();
+                if (postFileDto.FilePdfBase64.Length <= _allowedFileSizeMBComponent)
+                {
+                    string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
+                    ValidateExistingPendingFolder();
 
-                byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
-                string filePath = GeneratePathPendingFile(fileName);
+                    byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
+                    string filePath = GeneratePathPendingFile(fileName);
 
-                using var writer = new BinaryWriter(File.OpenWrite(filePath));
-                writer.Write(file);
+                    using var writer = new BinaryWriter(File.OpenWrite(filePath));
+                    writer.Write(file);
 
-                return fileName;
+                    return fileName;
+                }
+                else
+                {
+                    var mbAllowed = (_allowedFileSizeMBComponent / _megaByte).ToString();
+                    throw new InternalErrorException("El tamaño del archivo máximo permitido es " + mbAllowed + "MB");
+                }
             }
             catch (Exception ex)
             {
@@ -50,16 +61,25 @@ namespace StoreFiles.API.Services.StoreFiles
         {
             try
             {
-                string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
-                ValidateExistingPendingFolder();
+                if (postFileDto.FilePdfBase64.Length <= _allowedFileSizeMBComponent)
+                {
+                    string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
+                    ValidateExistingPendingFolder();
 
-                byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
-                string filePath = GeneratePathPendingFile(fileName, true);
+                    byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
+                    string filePath = GeneratePathPendingFile(fileName, true);
 
-                using var writer = new BinaryWriter(File.OpenWrite(filePath));
-                writer.Write(file);
+                    using var writer = new BinaryWriter(File.OpenWrite(filePath));
+                    writer.Write(file);
 
-                return fileName;
+                    return fileName;
+                }
+                else
+                {
+                    var mbAllowed = (_allowedFileSizeMBComponent * _megaByte).ToString();
+                    throw new InternalErrorException("El tamaño del archivo máximo permitido es " + mbAllowed + "MB");
+                }
+                
             }
             catch (Exception ex)
             {
