@@ -10,7 +10,7 @@ namespace ITSignerWebComponent.Core.Services
 {
     public class SignerService : ISignerService
     {
-        private readonly string _signatureFieldName = "SignatureITSign";
+        private string _signatureFieldName = "SignatureITSign";
         private readonly IQRGeneratorService _qrGeneratorService;
 
         public SignerService(IQRGeneratorService qrGeneratorService)
@@ -18,17 +18,17 @@ namespace ITSignerWebComponent.Core.Services
             _qrGeneratorService = qrGeneratorService;
         }
 
-        public (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto)
+        public (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto, bool changeFieldName = false)
         {
             byte[] bytesPdf = Convert.FromBase64String(signedDto.PdfToSign);
             (byte[], byte[]) data = (null, null);
 
-            data = PreparePDFAndDataToSign(signedDto);
+            data = PreparePDFAndDataToSign(signedDto, changeFieldName);
 
             return data;
         }
 
-        private (byte[] pdfWithSignPlaceholder, byte[] dataToSign) PreparePDFAndDataToSign(PreSignedDto signedDto)
+        private (byte[] pdfWithSignPlaceholder, byte[] dataToSign) PreparePDFAndDataToSign(PreSignedDto signedDto, bool changeFieldName = false)
         {
             SignerDigitalCertificate signerDigitalCertificate = new SignerDigitalCertificate();
 
@@ -36,6 +36,9 @@ namespace ITSignerWebComponent.Core.Services
             infoCertificate = infoCertificate.Replace("[DATE]", DateTime.Now.ToString());
 
             byte[] bytesQR = _qrGeneratorService.GenerateQR(infoCertificate);
+
+            if (changeFieldName)
+                _signatureFieldName += Guid.NewGuid().ToString().Substring(0, 1).ToUpper();
 
             var infoData = new InfoDataDto()
             {

@@ -11,9 +11,9 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ITSignerWebComponent.SignApp.Pages.Cades
+namespace ITSignerWebComponent.SignApp.Pages.Xades
 {
-    public partial class Cades
+    public partial class Xades
     {
 
         [Inject]
@@ -111,7 +111,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
             {
                 FileForSigningDto.File = this.Base64Doc;
 
-                var response = await _apiStoreFilesService.SignFile(FileForSigningDto, "cades");
+                var response = await _apiStoreFilesService.SignFile(FileForSigningDto, "xades");
                 if (response is not null)
                 {
                     ResponseService = response;

@@ -25,7 +25,7 @@ namespace StoreFiles.API.Services.StoreFiles
             _configuration = configuration;
             _allowedFileSizeMBComponent =  Convert.ToInt32(configuration["AllowedFileSizeMBComponent"]) * _megaByte;
         }
-        public string StoreFile(PostFileDto postFileDto)
+        public string StoreFile(PostFileDto postFileDto, string typeFile)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace StoreFiles.API.Services.StoreFiles
                     ValidateExistingPendingFolder();
 
                     byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
-                    string filePath = GeneratePathPendingFile(fileName);
+                    string filePath = GeneratePathPendingFile(fileName, typeFile);
 
                     using var writer = new BinaryWriter(File.OpenWrite(filePath));
                     writer.Write(file);
@@ -47,39 +47,6 @@ namespace StoreFiles.API.Services.StoreFiles
                     var mbAllowed = (_allowedFileSizeMBComponent / _megaByte).ToString();
                     throw new InternalErrorException("El tamaño del archivo máximo permitido es " + mbAllowed + "MB");
                 }
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("The input is not a valid Base-64"))
-                    throw new InternalErrorException("El string-base64 del archivo no es válido");
-                else
-                    throw new InternalErrorException(ex.Message);
-            }
-        }
-
-        public string StoreFileCades(PostFileDto postFileDto)
-        {
-            try
-            {
-                if (postFileDto.FilePdfBase64.Length <= _allowedFileSizeMBComponent)
-                {
-                    string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
-                    ValidateExistingPendingFolder();
-
-                    byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
-                    string filePath = GeneratePathPendingFile(fileName, true);
-
-                    using var writer = new BinaryWriter(File.OpenWrite(filePath));
-                    writer.Write(file);
-
-                    return fileName;
-                }
-                else
-                {
-                    var mbAllowed = (_allowedFileSizeMBComponent * _megaByte).ToString();
-                    throw new InternalErrorException("El tamaño del archivo máximo permitido es " + mbAllowed + "MB");
-                }
-                
             }
             catch (Exception ex)
             {
@@ -108,13 +75,14 @@ namespace StoreFiles.API.Services.StoreFiles
             return fileName;
         }
 
-        public string[] GetPendingFiles(PendingFileQueryFilter pendingFileQueryFilter)
+        public string[] GetPendingFiles(PendingFileQueryFilter pendingFileQueryFilter, string typeFile)
         {
             try
             {
                 //var placeholderSearch = "-[ID-USER]-[ID-APP]";
                 var placeholderSearch = "-[ID-APP]-[ID-USER]";
                 List<string> files = new List<string>();
+                string ext = GetExtensionTypeFile(typeFile);
 
                 placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
                 placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
@@ -123,7 +91,7 @@ namespace StoreFiles.API.Services.StoreFiles
                 CleanFolderSignedFiles();
                 ValidateExistingPendingFolder();
 
-                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(".pdf")).ToArray();
+                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(ext)).ToArray();
                     
                 //Selecciona los archivos por IdUser y IdApp
                 filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
@@ -141,44 +109,26 @@ namespace StoreFiles.API.Services.StoreFiles
             }
         }
 
-        public string[] GetCadesPendingFiles(PendingFileQueryFilter pendingFileQueryFilter)
+        private string GetExtensionTypeFile(string typeFile)
         {
-            try
+            switch (typeFile)
             {
-                //var placeholderSearch = "-[ID-USER]-[ID-APP]";
-                var placeholderSearch = "-[ID-APP]-[ID-USER]";
-                List<string> files = new List<string>();
-
-                placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
-                placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
-
-                //Elimina los archivos, manteniendo los archivos de los ultimos {n} dias según configuracion appsettings
-                CleanFolderSignedFiles();
-                ValidateExistingPendingFolder();
-
-                string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(".txt")).ToArray();
-
-                //Selecciona los archivos por IdUser y IdApp
-                filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
-
-                for (int i = 0; i < filesTemp.Length; i++)
-                {
-                    files.Add(filesTemp[i].Replace(filesTemp[i].Substring(0, _pendingFilesPath.Length), ""));
-                }
-
-                return files.ToArray();
-            }
-            catch (Exception ex)
-            {
-                throw new InternalErrorException(ex.Message);
+                case "[PADES]":
+                    return ".pdf";
+                case "[CADES]":
+                    return ".txt";
+                case "[XADES]":
+                    return ".xml";
+                default:
+                    throw new InternalErrorException("El tipo de archivo especificado es erróneo.");
             }
         }
 
-        public (bool flag, byte[] bytesFile) GetFile(string guidFile, bool isSigned)
+        public (bool flag, byte[] bytesFile) GetFile(string guidFile, string typeFile, bool isSigned = false)
         {
             bool existingFile = false;
             byte[] bytesFile = null;
-            string pathFile = isSigned ? GeneratePathSignedFile(guidFile) : GeneratePathPendingFile(guidFile);
+            string pathFile = isSigned ? GeneratePathSignedFile(guidFile) : GeneratePathPendingFile(guidFile, typeFile);
 
             if (File.Exists(pathFile))
             {
@@ -189,29 +139,15 @@ namespace StoreFiles.API.Services.StoreFiles
             return (existingFile, bytesFile);
         }
 
-        public (bool flag, byte[] bytesFile) GetCadesFile(string guidFile, bool isSigned)
-        {
-            bool existingFile = false;
-            byte[] bytesFile = null;
-            string pathFile = isSigned ? GeneratePathSignedFile(guidFile, true) : GeneratePathPendingFile(guidFile, true);
 
-            if (File.Exists(pathFile))
-            {
-                existingFile = true;
-                bytesFile = File.ReadAllBytes(pathFile);
-            }
-
-            return (existingFile, bytesFile);
-        }
-
-        public void StoreFileSigned(PostFileSignedDto postFileSignedDto)
+        public void StoreFileSigned(PostFileSignedDto postFileSignedDto, string typeFile)
         {
             try
             {
                 ValidateExistingSignedFolder();
 
                 byte[] file = Convert.FromBase64String(postFileSignedDto.PdfSignedBase64);
-                string filePendingPath = GeneratePathPendingFile(postFileSignedDto.PdfGuid);
+                string filePendingPath = GeneratePathPendingFile(postFileSignedDto.PdfGuid, typeFile);
                 string fileSignedPath = GeneratePathSignedFile(postFileSignedDto.PdfGuid);
 
                 File.Delete(filePendingPath);
@@ -242,33 +178,20 @@ namespace StoreFiles.API.Services.StoreFiles
             }
         }
 
-        public void StoreCadesFileSigned(PostFileSignedDto postFileSignedDto)
+
+        private string GeneratePathPendingFile(string guidFile, string typeFile)
         {
-            try
+            switch (typeFile)
             {
-                ValidateExistingSignedFolder();
-
-                byte[] file = Convert.FromBase64String(postFileSignedDto.PdfSignedBase64);
-                string filePendingPath = GeneratePathPendingFile(postFileSignedDto.PdfGuid, true);
-                string fileSignedPath = GeneratePathSignedFile(postFileSignedDto.PdfGuid, true);
-
-                File.Delete(filePendingPath);
-
-                using var writer = new BinaryWriter(File.OpenWrite(fileSignedPath));
-                writer.Write(file);
+                case "[PADES]":
+                    return _pendingFilesPath += $"{guidFile}.pdf";
+                case "[CADES]":
+                    return _pendingFilesPath += $"{guidFile}.txt";
+                case "[XADES]":
+                    return _pendingFilesPath += $"{guidFile}.xml";
+                default:
+                    throw new InternalErrorException("El tipo de archivo especificado es erróneo.");
             }
-            catch (Exception ex)
-            {
-                throw new InternalErrorException(ex.Message);
-            }
-        }
-
-        private string GeneratePathPendingFile(string guidFile, bool isCadesFile = false)
-        {
-            if (isCadesFile)
-                return _pendingFilesPath += $"{guidFile}.txt";
-            else
-                return _pendingFilesPath += $"{guidFile}.pdf";
         }
 
         private string GeneratePathSignedFile(string guidFile, bool isCadesFile = false)

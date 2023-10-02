@@ -54,6 +54,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
         public bool FlagAPIFiles { get; set; } = false;
         public int IdUser { get; set; } = 0;
         public int IdApp { get; set; } = 0;
+        public bool ChangeFieldSigningName { get; set; } = false;
         protected override void OnInitialized()
         {
             GetQueryParameters();
@@ -95,7 +96,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
             {
                 try
                 {
-                    var response = await _apiStoreFilesService.GetPendingFiles(IdUser, IdApp);
+                    var response = await _apiStoreFilesService.GetPendingFiles(IdUser, IdApp, "pades");
                     if (response.Item2 is not null)
                     {
                         PendingFiles = response.Item2;
@@ -167,21 +168,21 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
             UriHelper.NavigateTo(UriHelper.Uri, forceLoad: true);
         }
 
-        private async Task<bool> SignDocument(string fileName)
+        private async Task<bool> SignDocument(string fileName, bool changeFieldName = false)
         {
             var flag = false;
-            var response = _apiService.GenerateDataToSign(PreSignedDto);
+            var response = _apiService.GenerateDataToSign(PreSignedDto, changeFieldName);
 
             if (response.bs64DataToSign is not null)
             {
-                var cms = await _jsRuntime.InvokeAsync<string>("generateCMSToEmbed", response.bs64DataToSign);
+                var cms = await _jsRuntime.InvokeAsync<string>("generateCMSToEmbed", Convert.FromBase64String(response.bs64DataToSign));
                 var embedSignatureDto = new EmbedSignatureDto() { PdfFilePrepared = response.bs64PdfPrepared, Signature = cms };
                 var responseSign = _apiService.EmbedSignature(embedSignatureDto);
 
                 if (!string.IsNullOrEmpty(responseSign.message) && !string.IsNullOrEmpty(responseSign.fileSigned))
                 {
                     Base64DocSigned = responseSign.fileSigned;
-                    flag = await _apiStoreFilesService.PostSignedFile(new PostFileSignedDto { PdfGuid = fileName, PdfSignedBase64 = Base64DocSigned });
+                    flag = await _apiStoreFilesService.PostSignedFile(new PostFileSignedDto { PdfGuid = fileName, PdfSignedBase64 = Base64DocSigned }, "pades");
 
                     return flag;
                     //await _jsRuntime.InvokeVoidAsync("setVisibleBtnDownloadDoc");
@@ -288,7 +289,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
 
                                 foreach (var fileName in this.SelectedFiles)
                                 {
-                                    var response = await _apiStoreFilesService.GetPendingFile(fileName);
+                                    var response = await _apiStoreFilesService.GetPendingFile(fileName, "pades");
 
                                     if (response.Item1)
                                     {
@@ -309,8 +310,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                                         this.PreSignedDto.InfoCertificate = new InfoCertificateDto();
                                         this.PreSignedDto.InfoCertificate.Location = commonName + " - " + locality;
                                         this.PreSignedDto.InfoCertificate.Reason = organizationUnit + " / " + streetAddress;
+                                        this.PreSignedDto.InfoCertificate.DataCertificate = commonName + "\n" + locality + "\n" + countryName + "\n" + organizationUnit + "\n" + streetAddress + " / " + state + "\n" + " [DATE]";
 
-                                        if (!await SignDocument(fileName))
+                                        if (!await SignDocument(fileName, ChangeFieldSigningName))
                                         {
                                             await _swalService.FireAsync("Error", "Ha ocurrido un error cargando y firmando el archivo", "error");
                                             ReloadPage();
@@ -337,6 +339,15 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                             {
                                 //await _jsRuntime.InvokeVoidAsync("InitializeFortify");
                                 onSubmit();
+                            }
+                            else if (ex.Message.Contains("Field has been already signed."))
+                            {
+                                ChangeFieldSigningName = true;
+                                onSubmit();
+                            }
+                            else if (ex.Message.Contains("A task was canceled."))
+                            {
+                                await _swalService.FireAsync("Error", "Se ha excedido el tiempo limite de espera.", "error");
                             }
                             else
                             {

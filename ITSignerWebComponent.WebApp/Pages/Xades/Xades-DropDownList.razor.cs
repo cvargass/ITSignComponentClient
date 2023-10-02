@@ -15,9 +15,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace ITSignerWebComponent.SignApp.Pages.Cades
+namespace ITSignerWebComponent.SignApp.Pages.Xades
 {
-    public partial class Cades_DropDownList
+    public partial class Xades_DropDownList
     {
         [Inject]
         public IComponentManagerService _apiService { get; set; }
@@ -92,7 +92,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
             {
                 try
                 {
-                    var response = await _apiStoreFilesService.GetPendingFiles(IdUser, IdApp, "cades");
+                    var response = await _apiStoreFilesService.GetPendingFiles(IdUser, IdApp, "xades");
                     if (response.Item2 is not null)
                     {
                         PendingFiles = response.Item2;
@@ -190,7 +190,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
 
         private async void onCheckBoxChange(string nameFile, object aChecked)
         {
-            this.guidFileSelected = nameFile.Replace(".txt", "");
+            this.guidFileSelected = nameFile.Replace(".xml", "");
 
             if ((bool)aChecked)
             {
@@ -225,7 +225,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
 
                                 foreach (var fileName in this.SelectedFiles)
                                 {
-                                    var response = await _apiStoreFilesService.GetPendingFile(fileName, "cades");
+                                    var response = await _apiStoreFilesService.GetPendingFile(fileName, "xades");
 
                                     if (response.Item1)
                                     {
@@ -233,7 +233,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
 
                                         var cms = await _jsRuntime.InvokeAsync<string>("generateCMSToEmbed", FileForSigningDto.File);
 
-                                        var flag = await _apiStoreFilesService.PostSignedFile(new PostFileSignedDto { PdfGuid = fileName, PdfSignedBase64 = cms }, "cades");
+                                        var flag = await _apiStoreFilesService.PostSignedFile(new PostFileSignedDto { PdfGuid = fileName, PdfSignedBase64 = cms }, "xades");
                                         
                                         if (flag)
                                             signedFiles++;
@@ -269,7 +269,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
                                 //await _jsRuntime.InvokeVoidAsync("InitializeFortify");
                                 onSubmit();
                             }
-                            else if (ex.Message.Contains("A task was canceled."))
+                            else if(ex.Message.Contains("A task was canceled."))
                             {
                                 await _swalService.FireAsync("Error", "Se ha excedido el tiempo limite de espera.", "error");
                             }

@@ -192,7 +192,8 @@ window.getPemSelected = async function () {
 
 window.generateCMSToEmbed = async function (dataToSign) {
     try {
-        var demoData = window.convertBase64ToArrayBuffer(dataToSign);
+        //var demoData = window.convertBase64ToArrayBuffer(dataToSign);
+        var demoData = dataToSign;
 
         var providerId = window.localStorage.getItem("ProviderId");
         const provider = await ws.getCrypto(providerId);

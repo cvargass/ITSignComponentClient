@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.Sign;
 using StoreFiles.Core.QueryFilters;
+using StoreFiles.Core.Services.Sign;
 using StoreFiles.Core.Services.StoreFiles;
 using System;
 
 namespace StoreFiles.API.Controllers.StoreFiles
 {
-    [Route("api/[controller]")]
+    [Route("api/pades")]
     [ApiController]
-    public class FilesController : ControllerBase
+    public class PadesController : ControllerBase
     {
         private readonly IStoreFileService _storeFileService;
-
-        public FilesController(IStoreFileService storeFileService)
+        private readonly ISignService _signService;
+        public PadesController(IStoreFileService storeFileService, ISignService signService)
         {
             _storeFileService = storeFileService;
+            _signService = signService;
         }
 
         [HttpPost]
@@ -23,7 +26,7 @@ namespace StoreFiles.API.Controllers.StoreFiles
         {
             if (postFileDto.IdApp != 0 && postFileDto.IdUser != 0)
             {
-                string guidFileName = _storeFileService.StoreFile(postFileDto);
+                string guidFileName = _storeFileService.StoreFile(postFileDto, "[PADES]");
 
                 return Ok(new { guidFileName });
             }
@@ -34,7 +37,7 @@ namespace StoreFiles.API.Controllers.StoreFiles
         [HttpGet]
         public IActionResult GetFiles([FromQuery]PendingFileQueryFilter pendingFileQueryFilter)
         {
-            string[] fileNames = _storeFileService.GetPendingFiles(pendingFileQueryFilter);
+            string[] fileNames = _storeFileService.GetPendingFiles(pendingFileQueryFilter, "[PADES]");
 
             if (fileNames.Length > 0)
                 return Ok(new { Message = "¡ Archivos Pendientes !", PendingFiles = fileNames });
@@ -45,7 +48,7 @@ namespace StoreFiles.API.Controllers.StoreFiles
         [HttpGet("pending-file/{guidFile}")]
         public IActionResult GetFile(string guidFile)
         {
-            var response = _storeFileService.GetFile(guidFile);
+            var response = _storeFileService.GetFile(guidFile, "[PADES]");
 
             if (response.flag)
                 return Ok(new { Message = "¡ Archivo Pendiente !", FileBase64 = Convert.ToBase64String(response.bytesFile) });
@@ -56,7 +59,7 @@ namespace StoreFiles.API.Controllers.StoreFiles
         [HttpGet("signed-file/{guidFile}")]
         public IActionResult GetSignedFile(string guidFile)
         {
-            var response = _storeFileService.GetFile(guidFile, true);
+            var response = _storeFileService.GetFile(guidFile, "[PADES]", true);
 
             if (response.flag)
                 return Ok(new { Message = "¡ Archivo Firmado !", FileBase64 = Convert.ToBase64String(response.bytesFile) });
@@ -67,9 +70,16 @@ namespace StoreFiles.API.Controllers.StoreFiles
         [HttpPost("upload-file-signed")]
         public IActionResult PostFileSigned(PostFileSignedDto postFileSignedDto)
         {
-            _storeFileService.StoreFileSigned(postFileSignedDto);
+            _storeFileService.StoreFileSigned(postFileSignedDto, "[PADES]");
 
             return Ok(new { Message = "¡ Archivo firmado almacenado correctamente !" });
+        }
+
+        [HttpPost("sign")]
+        public IActionResult SignFile(SignDto signDto)
+        {
+            var signedFile = _signService.SignFile(signDto);
+            return Ok(new { message = "Documento Firmado Exitosamente", signedFile });
         }
     }
 }

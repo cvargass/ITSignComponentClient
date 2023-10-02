@@ -1,9 +1,9 @@
-﻿using StoreFiles.Core.DTOs.Cades;
+﻿using StoreFiles.Core.DTOs.FileForSigning;
 
 namespace StoreFiles.Core.Services.Cades
 {
     public interface ICadesService
     {
-        byte[] SignCadesFile(CadesFileDto cadesFileDto);
+        byte[] SignCadesFile(FileForSigningDto fileForSigningDto);
     }
 }

@@ -14,6 +14,7 @@ using StoreFiles.Core.Services.StoreFiles;
 using StoreFiles.Core.Services.Utils;
 using StoreFiles.Core.Services.Utils.QRGenerator;
 using StoreFiles.Core.Services.Utils.WriterQR;
+using StoreFiles.Core.Services.Xades;
 
 namespace StoreFiles.API
 {
@@ -39,7 +40,8 @@ namespace StoreFiles.API
             services.AddTransient<ISignService, SignService>();
             services.AddTransient<ILoggerService, LoggerService>();
             services.AddTransient<ICadesService, CadesService>();
-            
+            services.AddTransient<IXadesService, XadesService>();
+
             services.AddTransient<IUtilsService, UtilsService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
             services.AddTransient<IWriterQRService, WriterQRService>();

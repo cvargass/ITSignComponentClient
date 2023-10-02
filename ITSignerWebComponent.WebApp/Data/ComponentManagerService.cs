@@ -73,9 +73,9 @@ namespace ITSignerWebComponent.SignApp.Data
             return flagLicenseActivated;
         }
 
-        public (string bs64DataToSign, string bs64PdfPrepared) GenerateDataToSign(PreSignedDto preSignedDto)
+        public (string bs64DataToSign, string bs64PdfPrepared) GenerateDataToSign(PreSignedDto preSignedDto, bool changeFieldName = false)
         {
-            var data = _signerService.BeginPreSigningProcess(preSignedDto);
+            var data = _signerService.BeginPreSigningProcess(preSignedDto, changeFieldName);
 
             return (
                 Convert.ToBase64String(data.dataToSign),

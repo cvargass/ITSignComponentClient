@@ -9,7 +9,7 @@ namespace ITSignerWebComponent.SignApp.Data
     {
         Task<(bool flagActivatedLicense, string message)> ActivateLicense(LicenseDto licenseDto);
         (string message, string fileSigned) EmbedSignature(EmbedSignatureDto embedSignatureDto);
-        (string bs64DataToSign, string bs64PdfPrepared) GenerateDataToSign(PreSignedDto preSignedDto);
+        (string bs64DataToSign, string bs64PdfPrepared) GenerateDataToSign(PreSignedDto preSignedDto, bool changeFieldName = false);
         bool LoadLicense();
     }
 }

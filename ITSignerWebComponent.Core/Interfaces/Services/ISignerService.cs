@@ -5,7 +5,7 @@ namespace ITSignerWebComponent.Core.Interfaces.Services
 {
     public interface ISignerService
     {
-        (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto);
+        (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto, bool changeFieldName = false);
         byte[] SigningProcessEmbedSignature(EmbedSignatureDto signatureDto);
     }
 }

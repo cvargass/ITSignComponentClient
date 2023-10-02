@@ -1,5 +1,5 @@
 ﻿using ITSignerWebComponent.SignApp.Responses.APIStoreResponses;
-using StoreFiles.Core.DTOs.Cades;
+using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using System.Threading.Tasks;
@@ -8,15 +8,11 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
 {
     public interface IAPIStoreFilesService
     {
-        Task<(bool, string)> GetPendingFile(string guidFile);
-        Task<(bool, string[])> GetPendingFiles(int idUser, int idApp);
-        Task<(bool, string)> GetSignedFile(string guidFile);
-        Task<(bool, string)> PostFile(PostFileDto postFileDto);
-        Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto);
-        Task<CadesFileResponse> SignCadesFile(CadesFileDto cadesFileDto);
-        Task<(bool, string[])> GetCadesPendingFiles(int idUser, int idApp);
-        Task<(bool, string)> GetCadesPendingFile(string guidFile);
-        Task<(bool, string)> PostCadesFile(PostFileDto postFileDto);
-        Task<bool> PostCadesSignedFile(PostFileSignedDto postFileSignedDto);
+        Task<(bool, string)> GetPendingFile(string guidFile, string typeFile);
+        Task<(bool, string[])> GetPendingFiles(int idUser, int idApp, string typeFile);
+        Task<(bool, string)> GetSignedFile(string guidFile, string typeFile);
+        Task<(bool, string)> PostFile(PostFileDto postFileDto, string typeFile);
+        Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto, string typeFile);
+        Task<FileForSigningResponse> SignFile(FileForSigningDto fileForSigningDto, string typeFile);
     }
 }

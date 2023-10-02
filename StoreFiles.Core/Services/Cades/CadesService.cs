@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using SignLib.Cades;
 using SignLib.Certificates;
-using StoreFiles.Core.DTOs.Cades;
+using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.Options;
 using StoreFiles.Core.Services.Logger;
 using System;
@@ -22,7 +21,7 @@ namespace StoreFiles.Core.Services.Cades
             _signOptions = options.Value;
         }
 
-        public byte[] SignCadesFile(CadesFileDto cadesFileDto)
+        public byte[] SignCadesFile(FileForSigningDto fileForSigningDto)
         {
             byte[] signedFile = null;
             X509Certificate2 certificate= null;
@@ -46,7 +45,7 @@ namespace StoreFiles.Core.Services.Cades
                 //pkcs7Sign.TimeStamping.ServerUrl = new Uri("http://ca.signfiles.com/TSAServer.aspx");
 
                 //thi file can be saved as .p7s or .p7m file
-                signedFile = pkcs7Sign.ApplyDigitalSignature(cadesFileDto.File);
+                signedFile = pkcs7Sign.ApplyDigitalSignature(fileForSigningDto.File);
             }
             catch (Exception ex)
             {

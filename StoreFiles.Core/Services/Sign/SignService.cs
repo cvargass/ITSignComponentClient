@@ -22,6 +22,8 @@ using StoreFiles.Core.Services.Utils.TextLocationStrategy;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.Services.StoreFiles;
 using StoreFiles.API.Services.StoreFiles;
+using SignLib.Cades;
+using SignLib;
 
 namespace StoreFiles.Core.Services.Sign
 {
@@ -64,7 +66,6 @@ namespace StoreFiles.Core.Services.Sign
             try
             {
                 PdfSignature ps = new PdfSignature(_SignOptions.SerialNumber);
-
                 string certificateInfo = GetCertificateInformation(signDto);
 
                 byte[] bytesQR = _qrGeneratorService.GenerateQR(certificateInfo);

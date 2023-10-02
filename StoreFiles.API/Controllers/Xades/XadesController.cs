@@ -3,22 +3,22 @@ using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.QueryFilters;
-using StoreFiles.Core.Services.Cades;
 using StoreFiles.Core.Services.StoreFiles;
+using StoreFiles.Core.Services.Xades;
 using System;
 
-namespace StoreFiles.API.Controllers.Cades
+namespace StoreFiles.API.Controllers.Xades
 {
-    [Route("api/cades")]
+    [Route("api/xades")]
     [ApiController]
-    public class CadesController : ControllerBase
+    public class XadesController : ControllerBase
     {
-        private readonly ICadesService _cadesService;
+        private readonly IXadesService _xadesService;
         private readonly IStoreFileService _storeFileService;
 
-        public CadesController(ICadesService cadesService, IStoreFileService storeFileService)
+        public XadesController(IXadesService xadesService, IStoreFileService storeFileService)
         {
-            _cadesService = cadesService;
+            _xadesService = xadesService;
             _storeFileService = storeFileService;
         }
 
@@ -27,7 +27,7 @@ namespace StoreFiles.API.Controllers.Cades
         {
             if (postFileDto.IdApp != 0 && postFileDto.IdUser != 0)
             {
-                string guidFileName = _storeFileService.StoreFile(postFileDto, "[CADES]");
+                string guidFileName = _storeFileService.StoreFile(postFileDto, "[XADES]");
 
                 return Ok(new { guidFileName });
             }
@@ -38,7 +38,7 @@ namespace StoreFiles.API.Controllers.Cades
         [HttpGet]
         public IActionResult GetFiles([FromQuery] PendingFileQueryFilter pendingFileQueryFilter)
         {
-            string[] fileNames = _storeFileService.GetPendingFiles(pendingFileQueryFilter, "[CADES]");
+            string[] fileNames = _storeFileService.GetPendingFiles(pendingFileQueryFilter, "[XADES]");
 
             if (fileNames.Length > 0)
                 return Ok(new { Message = "¡ Archivos Pendientes !", PendingFiles = fileNames });
@@ -49,7 +49,7 @@ namespace StoreFiles.API.Controllers.Cades
         [HttpGet("pending-file/{guidFile}")]
         public IActionResult GetFile(string guidFile)
         {
-            var response = _storeFileService.GetFile(guidFile, "[CADES]");
+            var response = _storeFileService.GetFile(guidFile, "[XADES]");
 
             if (response.flag)
                 return Ok(new { Message = "¡ Archivo Pendiente !", FileBase64 = Convert.ToBase64String(response.bytesFile) });
@@ -60,7 +60,7 @@ namespace StoreFiles.API.Controllers.Cades
         [HttpGet("signed-file/{guidFile}")]
         public IActionResult GetSignedFile(string guidFile)
         {
-            var response = _storeFileService.GetFile(guidFile, "[CADES]", true);
+            var response = _storeFileService.GetFile(guidFile, "[XADES]", true);
 
             if (response.flag)
                 return Ok(new { Message = "¡ Archivo Firmado !", FileBase64 = Convert.ToBase64String(response.bytesFile) });
@@ -71,17 +71,17 @@ namespace StoreFiles.API.Controllers.Cades
         [HttpPost("sign")]
         public IActionResult SignFile(FileForSigningDto fileForSigningDto)
         {
-            var signedFile = _cadesService.SignCadesFile(fileForSigningDto);
+            var signedFile = _xadesService.SignXadesFile(fileForSigningDto);
 
-            return Ok(new { Message = "¡ Archivo Firmado ! Recuerde que el archivo debe tener la extensión .p7z", signedFile });
+            return Ok(new { Message = "¡ Archivo Firmado Correctamente!", signedFile });
         }
 
         [HttpPost("upload-file-signed")]
         public IActionResult PostFileSigned(PostFileSignedDto postFileSignedDto)
         {
-            _storeFileService.StoreFileSigned(postFileSignedDto, "[CADES]");
+            _storeFileService.StoreFileSigned(postFileSignedDto, "[XADES]");
 
-            return Ok(new { Message = "¡ Archivo firmado almacenado correctamente !" });
+            return Ok(new { Message = "¡ Archivo firmado y almacenado correctamente !" });
         }
     }
 }

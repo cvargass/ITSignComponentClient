@@ -1,7 +1,7 @@
 ﻿using ITSignerWebComponent.SignApp.Responses.APIStoreResponses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
-using StoreFiles.Core.DTOs.Cades;
+using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using System.Net.Http;
@@ -23,10 +23,10 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             _domain = configuration["APIStoreFiles:Domain"].ToString();
         }
 
-        public async Task<(bool, string[])> GetPendingFiles(int idUser, int idApp)
+        public async Task<(bool, string[])> GetPendingFiles(int idUser, int idApp, string typeFile)
         {
             string[] fileNamesPending = null;
-            string url = GenerateUrl($"api/Files?idUser={idUser}&idApp={idApp}");
+            string url = GenerateUrl($"api/{typeFile}?idUser={idUser}&idApp={idApp}");
             var response = await httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -42,43 +42,12 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return (response.IsSuccessStatusCode, fileNamesPending);
         }
 
-        public async Task<(bool, string[])> GetCadesPendingFiles(int idUser, int idApp)
-        {
-            string[] fileNamesPending = null;
-            string url = GenerateUrl($"api/cades/files?idUser={idUser}&idApp={idApp}");
-            var response = await httpClient.GetAsync(url);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var responseService = await response.Content.ReadFromJsonAsync<PendingFilesResponse>();
-                fileNamesPending = responseService.PendingFiles;
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
-            }
-
-            return (response.IsSuccessStatusCode, fileNamesPending);
-        }
-
-        private string GenerateUrl(string endpointUrl)
-        {
-            string url = string.Empty;
-            
-            if (!string.IsNullOrEmpty(_domain))
-                url = $"/{_domain}/{endpointUrl}";
-            else
-                url = $"/{endpointUrl}";
-
-            return url;
-        }
-
-        public async Task<(bool, string)> GetPendingFile(string guidFile)
+        public async Task<(bool, string)> GetPendingFile(string guidFile, string typeFile)
         {
             string fileBase64 = null;
             bool flag = false;
-            string url = GenerateUrl($"api/Files/pending-file/{guidFile}");
-
+            string url = GenerateUrl($"api/{typeFile}/pending-file/{guidFile}");
             var response = await httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -98,35 +67,11 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return (flag, fileBase64);
         }
 
-        public async Task<(bool, string)> GetCadesPendingFile(string guidFile)
-        {
-            string fileBase64 = null;
-            bool flag = false;
-            string url = GenerateUrl($"api/cades/pending-file/{guidFile}");
 
-            var response = await httpClient.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseService = await response.Content.ReadFromJsonAsync<FileResponse>();
-                if (responseService.FileBase64 != null)
-                {
-                    fileBase64 = responseService.FileBase64;
-                    flag = true;
-                }
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
-            }
-
-            return (flag, fileBase64);
-        }
-
-        public async Task<(bool, string)> GetSignedFile(string guidFile)
+        public async Task<(bool, string)> GetSignedFile(string guidFile, string fileType)
         {
             string fileSignedBase64 = null;
-            string url = GenerateUrl($"api/Files/signed-file/{guidFile}");
+            string url = GenerateUrl($"api/{fileType}/Files/signed-file/{guidFile}");
 
             var response = await httpClient.GetAsync(url);
 
@@ -143,30 +88,11 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return (response.IsSuccessStatusCode, fileSignedBase64);
         }
 
-        public async Task<(bool, string)> GetCadesSignedFile(string guidFile)
-        {
-            string fileSignedBase64 = null;
-            string url = GenerateUrl($"api/cades/signed-file/{guidFile}");
 
-            var response = await httpClient.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseService = await response.Content.ReadFromJsonAsync<FileResponse>();
-                fileSignedBase64 = responseService.FileBase64;
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
-            }
-
-            return (response.IsSuccessStatusCode, fileSignedBase64);
-        }
-
-        public async Task<(bool, string)> PostFile(PostFileDto postFileDto)
+        public async Task<(bool, string)> PostFile(PostFileDto postFileDto, string fileType)
         {
             string guidFile = string.Empty;
-            string url = GenerateUrl("api/Files");
+            string url = GenerateUrl($"api/{fileType}/Files");
 
             var response = await httpClient.PostAsJsonAsync(url, postFileDto);
 
@@ -183,30 +109,10 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return (response.IsSuccessStatusCode, guidFile);
         }
 
-        public async Task<(bool, string)> PostCadesFile(PostFileDto postFileDto)
-        {
-            string guidFile = string.Empty;
-            string url = GenerateUrl("api/cades/files");
-
-            var response = await httpClient.PostAsJsonAsync(url, postFileDto);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var tokenResponse = await response.Content.ReadFromJsonAsync<PostFileResponse>();
-                guidFile = tokenResponse.GuidFile;
-            }
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
-            }
-
-            return (response.IsSuccessStatusCode, guidFile);
-        }
-
-        public async Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto)
+        public async Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto, string fileType)
         {
             bool flag = false;
-            string url = GenerateUrl("api/Files/upload-file-signed");
+            string url = GenerateUrl($"api/{fileType}/upload-file-signed");
 
             var response = await httpClient.PostAsJsonAsync(url, postFileSignedDto);
 
@@ -220,34 +126,18 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return flag;
         }
 
-        public async Task<bool> PostCadesSignedFile(PostFileSignedDto postFileSignedDto)
-        {
-            bool flag = false;
-            string url = GenerateUrl("api/cades/upload-file-signed");
 
-            var response = await httpClient.PostAsJsonAsync(url, postFileSignedDto);
-
-            if (response.IsSuccessStatusCode)
-                flag = true;
-            else
-            {
-                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
-            }
-
-            return flag;
-        }
-
-        public async Task<CadesFileResponse> SignCadesFile(CadesFileDto cadesFileDto)
+        public async Task<FileForSigningResponse> SignFile(FileForSigningDto fileForSigningDto, string typeFile)
         {
             string guidFile = string.Empty;
-            string url = GenerateUrl("api/Cades/sign");
-            CadesFileResponse cadesFileResponse = null;
+            string url = GenerateUrl($"api/{typeFile}/sign");
+            FileForSigningResponse cadesFileResponse = null;
 
-            var response = await httpClient.PostAsJsonAsync(url, cadesFileDto);
+            var response = await httpClient.PostAsJsonAsync(url, fileForSigningDto);
 
             if (response.IsSuccessStatusCode)
             {
-                cadesFileResponse = await response.Content.ReadFromJsonAsync<CadesFileResponse>();
+                cadesFileResponse = await response.Content.ReadFromJsonAsync<FileForSigningResponse>();
             }
             else
             {
@@ -255,6 +145,19 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             }
 
             return cadesFileResponse;
+        }
+
+
+        private string GenerateUrl(string endpointUrl)
+        {
+            string url = string.Empty;
+
+            if (!string.IsNullOrEmpty(_domain))
+                url = $"/{_domain}/{endpointUrl}";
+            else
+                url = $"/{endpointUrl}";
+
+            return url;
         }
 
     }
