@@ -109,7 +109,10 @@ namespace StoreFiles.Core.Services.Utils
                 exists = textFound;
 
                 if (exists)
+                {
                     numberPage = i;
+                    break;
+                }
             }
 
             return (exists, numberPage);
