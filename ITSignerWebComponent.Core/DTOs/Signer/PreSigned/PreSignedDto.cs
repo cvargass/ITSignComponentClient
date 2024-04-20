@@ -1,4 +1,5 @@
 ﻿using ITSignerWebComponent.Core.DTOs.Signer.InfoCertificate;
+using SignerPDF.DigitalSignature.Core.Domain.AxisPosition;
 using System.ComponentModel.DataAnnotations;
 
 namespace ITSignerWebComponent.Core.DTOs.Signer.PreSigned
@@ -10,5 +11,6 @@ namespace ITSignerWebComponent.Core.DTOs.Signer.PreSigned
         public string Pem { get; set; }
         public bool Visible { get; set; }
         public InfoCertificateDto InfoCertificate { get; set; }
+        public AxisPosition Position { get; set; }
     }
 }

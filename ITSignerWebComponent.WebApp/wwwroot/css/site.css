@@ -103,3 +103,25 @@ a, .btn-link {
         opacity: 1;
     }
 }
+
+
+/* MODIFICATIONS CSS PDF */
+.pdf-viewer-custom canvas {
+    width: 696px;
+    height: 746px;
+    position: relative;
+    z-index: 1;
+}
+
+.pdf-viewer-custom {
+    margin-top: -63px;
+}
+
+.pdf-viewer-dropdown-toggle {
+    display: none;
+}
+
+.badge {
+    display:none;
+}
+/* END MODIFICATIONS CSS PDF */

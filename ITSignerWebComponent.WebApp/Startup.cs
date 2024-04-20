@@ -6,10 +6,10 @@ using ITSignerWebComponent.SignApp.Data;
 using ITSignerWebComponent.SignApp.Error;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StoreFiles.Core.Services.Utils;
 using StoreFiles.Core.Services.Utils.QRGenerator;
 using System;
 
@@ -44,12 +44,14 @@ namespace ITSignerWebComponent.SignApp
 
 
             //Services
+            services.AddBlazorBootstrap();
             services.AddTransient<ILicenseService, LicenseService>();
             services.AddTransient<ISignerService, SignerService>();
             services.AddSingleton<ILoggerService, LoggerService>();
             services.AddTransient<IErrorService, ErrorService>();
             services.AddTransient<IEncryptorService, EncryptorService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
+            services.AddTransient<IUtilsService, UtilsService>();
 
             //Automapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

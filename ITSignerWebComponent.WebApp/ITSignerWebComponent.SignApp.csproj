@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
 	<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
@@ -12,8 +12,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Bootstrap" Version="2.2.0" />
     <PackageReference Include="CurrieTechnologies.Razor.SweetAlert2" Version="5.3.0" />
 	<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SignerPDF.DigitalSignature.Core">
+      <HintPath>..\ITSignerWebComponent.Core\Lib\SignerPDF.DigitalSignature.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

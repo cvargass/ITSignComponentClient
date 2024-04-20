@@ -1,6 +1,7 @@
 ﻿using ITSignerWebComponent.Core.DTOs.Signer.EmbedSignature;
 using ITSignerWebComponent.Core.DTOs.Signer.PreSigned;
 using ITSignerWebComponent.Core.Interfaces.Services;
+using Microsoft.Extensions.Configuration;
 using SignerPDF.DigitalSignature.Core.DTOs.InfoDataDto;
 using SignerPDF.DigitalSignature.Core.Services;
 using StoreFiles.Core.Services.Utils.QRGenerator;
@@ -12,10 +13,13 @@ namespace ITSignerWebComponent.Core.Services
     {
         private string _signatureFieldName = "SignatureITSign";
         private readonly IQRGeneratorService _qrGeneratorService;
+        private readonly IConfiguration _configuration;
 
-        public SignerService(IQRGeneratorService qrGeneratorService)
+        public SignerService(IQRGeneratorService qrGeneratorService,
+                             IConfiguration configuration)
         {
             _qrGeneratorService = qrGeneratorService;
+            _configuration = configuration;
         }
 
         public (byte[] pdfPrepared, byte[] dataToSign) BeginPreSigningProcess(PreSignedDto signedDto, bool changeFieldName = false)
@@ -40,6 +44,12 @@ namespace ITSignerWebComponent.Core.Services
             if (changeFieldName)
                 _signatureFieldName += Guid.NewGuid().ToString().Substring(0, 1).ToUpper();
 
+            if (_configuration["InfoSignature:Reason"] is not null)
+                signedDto.InfoCertificate.Reason = _configuration["InfoSignature:Reason"];
+
+            if (_configuration["InfoSignature:Location"] is not null)
+                signedDto.InfoCertificate.Location = _configuration["InfoSignature:Location"];
+
             var infoData = new InfoDataDto()
             {
                 Pem = signedDto.Pem,
@@ -49,7 +59,8 @@ namespace ITSignerWebComponent.Core.Services
                 Location = signedDto.InfoCertificate.Location,
                 Reason = signedDto.InfoCertificate.Reason,
                 Visible = signedDto.Visible,
-                Image = bytesQR
+                Image = bytesQR,
+                SignPosition = signedDto.Position
             };
 
             return signerDigitalCertificate.PreparePDFAndGetHash(infoData);
