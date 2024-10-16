@@ -295,5 +295,20 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
                 await _swalService.FireAsync("Warning", "Debe configurar el API de archivos correctamente.", "warning");
             }
         }
+
+        private async void onCheckBoxMarkAllChange(object aChecked)
+        {
+            await _jsRuntime.InvokeVoidAsync("setCheckboxesValue", aChecked);
+            SelectedFiles.Clear();
+
+            if ((bool)aChecked)
+            {
+                foreach (var item in PendingFiles)
+                {
+                    this.guidFileSelected = item.Replace(".txt", "");
+                    SelectedFiles.Add(this.guidFileSelected);
+                }
+            }
+        }
     }
 }

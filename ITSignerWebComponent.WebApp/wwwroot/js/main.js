@@ -61,3 +61,12 @@ downloadFileP7z = function (fileBase64, filename) {
     downloadLink.download = filename + ".p7z";
     downloadLink.click();
 }
+
+
+setCheckboxesValue = function (flag) {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"].form-check-input');
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = flag;
+    });
+}

@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using StoreFiles.Core.DTOs.PostFileSigned;
-using StoreFiles.Core.DTOs.Sign;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -381,6 +380,21 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
             {
                 if (SelectedFiles.Contains(this.guidFileSelected))
                     SelectedFiles.Remove(this.guidFileSelected);
+            }
+        }
+
+        private async void onCheckBoxMarkAllChange(object aChecked)
+        {
+            await _jsRuntime.InvokeVoidAsync("setCheckboxesValue", aChecked);
+            SelectedFiles.Clear();
+
+            if ((bool)aChecked)
+            {
+                foreach (var item in PendingFiles)
+                {
+                    this.guidFileSelected = item.Replace(".pdf", "");
+                    SelectedFiles.Add(this.guidFileSelected);
+                }
             }
         }
     }

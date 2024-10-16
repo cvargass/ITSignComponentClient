@@ -36,9 +36,15 @@
                 <EditForm Model="@PreSignedDto" OnValidSubmit="onSubmit">
                     <DataAnnotationsValidator></DataAnnotationsValidator>
 
-
                     <div class="row">
-                        <label for="doc-file" class="col-md-12 col-form-label">Documento(s) por firmar:</label>
+                        <label for="doc-file" class="col-md-10 col-form-label">Documento(s) por firmar:</label>
+
+                        <div class="row col-md-2">
+                            <label for="doc-file" class="col-md-12 col-form-label">Marcar todos:</label>
+                            <div class="col-md-2">
+                                <input class="cbx-mark-all" type="checkbox" @onchange="eventArgs => { onCheckBoxMarkAllChange(eventArgs.Value); }" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">

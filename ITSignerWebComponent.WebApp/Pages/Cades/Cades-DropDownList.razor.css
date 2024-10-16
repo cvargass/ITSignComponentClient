@@ -4,4 +4,9 @@
 
 .table-custom:hover {
         background-color: #c8cbcf;
-}    
+}
+
+.cbx-mark-all {
+    margin-top: 10px;
+    margin-left: 40px;
+}
