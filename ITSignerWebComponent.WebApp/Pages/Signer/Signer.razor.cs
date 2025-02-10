@@ -371,6 +371,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
         {
             this.guidFileSelected = nameFile.Replace(".pdf", "");
 
+            if (!(bool)aChecked)
+                await _jsRuntime.InvokeVoidAsync("setAllCheckboxesCbValue", false);
+
             if ((bool)aChecked)
             {
                 if (!SelectedFiles.Contains(this.guidFileSelected))

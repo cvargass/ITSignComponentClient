@@ -70,3 +70,11 @@ setCheckboxesValue = function (flag) {
         checkbox.checked = flag;
     });
 }
+
+setAllCheckboxesCbValue = function (flag) {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"].cbx-mark-all');
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.checked = flag;
+    });
+}

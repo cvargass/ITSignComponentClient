@@ -192,6 +192,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Cades
         {
             this.guidFileSelected = nameFile.Replace(".txt", "");
 
+            if (!(bool)aChecked)
+                await _jsRuntime.InvokeVoidAsync("setAllCheckboxesCbValue", false);
+
             if ((bool)aChecked)
             {
                 if (!SelectedFiles.Contains(this.guidFileSelected))
