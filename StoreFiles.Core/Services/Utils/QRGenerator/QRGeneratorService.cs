@@ -1,4 +1,5 @@
-﻿using QRCoder;
+﻿using Net.Codecrete.QrCodeGenerator;
+using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -7,6 +8,15 @@ namespace StoreFiles.Core.Services.Utils.QRGenerator
 {
     public class QRGeneratorService : IQRGeneratorService
     {
+        public byte[] GenerateQR(string text)
+        {
+            var qr = QrCode.EncodeText(text, QrCode.Ecc.Medium);
+            var pngAsBytes = qr.ToBmpBitmap(10, 3);
+
+            return pngAsBytes;
+        }
+
+        /*
         public byte[] GenerateQR(string text)
         {
             using QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -26,6 +36,6 @@ namespace StoreFiles.Core.Services.Utils.QRGenerator
                 qrBitmap.Save(ms, ImageFormat.Png);
                 return ms.ToArray();
             }
-        }
+        }*/
     }
 }

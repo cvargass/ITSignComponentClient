@@ -12,6 +12,7 @@
 	<PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
 	<PackageReference Include="QRCoder" Version="1.4.2" />
 	<PackageReference Include="itext7" Version="7.2.2" />
+	 <PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
