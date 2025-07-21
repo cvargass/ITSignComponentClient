@@ -37,7 +37,7 @@ namespace ITSignerWebComponent.SignApp
             });
 
             services.AddSignalR(e => {
-                e.MaximumReceiveMessageSize = (long?)1e+7;
+                e.MaximumReceiveMessageSize = (long?)3e+7;
             });
 
             services.AddSweetAlert2();

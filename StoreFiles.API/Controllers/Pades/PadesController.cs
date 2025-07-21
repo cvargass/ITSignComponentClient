@@ -67,6 +67,7 @@ namespace StoreFiles.API.Controllers.StoreFiles
                 return Ok(new { Message = "El archivo consultado no existe" });
         }
 
+        [RequestSizeLimit(104857600)] // 100 MB
         [HttpPost("upload-file-signed")]
         public IActionResult PostFileSigned(PostFileSignedDto postFileSignedDto)
         {
