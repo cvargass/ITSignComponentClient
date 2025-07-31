@@ -16,6 +16,7 @@ using StoreFiles.Core.Services.Utils;
 using StoreFiles.Core.Services.Utils.QRGenerator;
 using StoreFiles.Core.Services.Utils.WriterQR;
 using StoreFiles.Core.Services.Xades;
+using System;
 
 namespace StoreFiles.API
 {
@@ -36,9 +37,12 @@ namespace StoreFiles.API
                 options.Filters.Add<GlobalExceptionFilter>();
             });
 
+            int megabytes = int.Parse(Configuration["AllowedFileSizeMBComponent"] ?? "100");
+            long bytes = megabytes * 1024 * 1024;
+
             services.Configure<KestrelServerOptions>(options =>
             {
-                options.Limits.MaxRequestBodySize = 104857600; // 100 MB
+                options.Limits.MaxRequestBodySize = bytes;
             });
 
             //Services
@@ -51,6 +55,11 @@ namespace StoreFiles.API
             services.AddTransient<IUtilsService, UtilsService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
             services.AddTransient<IWriterQRService, WriterQRService>();
+
+            services.AddServerSideBlazor(options => {
+                 options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(10); // 10 minutos
+                 options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(30); // Retención de circuito
+             });
 
             services.Configure<SignOptions>(Configuration.GetSection("SignConfigurations"));
 

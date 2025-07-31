@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using iText.Kernel.Pdf;
+using Microsoft.Extensions.Configuration;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.Exceptions;
@@ -29,12 +30,19 @@ namespace StoreFiles.API.Services.StoreFiles
         {
             try
             {
-                if (postFileDto.FilePdfBase64.Length <= _allowedFileSizeMBComponent)
+                /*
+                byte[] fileCompressed = ComprimirPdf(Convert.FromBase64String(postFileDto.FilePdfBase64));
+                string strFileCompressed = Convert.ToBase64String(fileCompressed);
+                postFileDto.FilePdfBase64 = strFileCompressed;
+                */
+
+                byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
+
+                if (file.Length <= _allowedFileSizeMBComponent)
                 {
                     string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
                     ValidateExistingPendingFolder();
 
-                    byte[] file = Convert.FromBase64String(postFileDto.FilePdfBase64);
                     string filePath = GeneratePathPendingFile(fileName, typeFile);
 
                     using var writer = new BinaryWriter(File.OpenWrite(filePath));
@@ -55,6 +63,23 @@ namespace StoreFiles.API.Services.StoreFiles
                 else
                     throw new InternalErrorException(ex.Message);
             }
+        }
+
+        public byte[] ComprimirPdf(byte[] inputPdfBytes)
+        {
+            using var inputStream = new MemoryStream(inputPdfBytes);
+            using var outputStream = new MemoryStream();
+
+            var reader = new PdfReader(inputStream);
+            var writerProps = new WriterProperties().SetFullCompressionMode(true);
+            var writer = new PdfWriter(outputStream, writerProps);
+
+            using (var pdfDoc = new PdfDocument(reader, writer))
+            {
+                pdfDoc.Close();
+            }
+
+            return outputStream.ToArray();
         }
 
         private string GenerateFileName(int idUser, int idApp)

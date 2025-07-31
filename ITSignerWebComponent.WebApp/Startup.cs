@@ -36,8 +36,11 @@ namespace ITSignerWebComponent.SignApp
                 client.BaseAddress = new Uri(Configuration["APIStoreFiles:BaseUrl"]);
             });
 
+            int megabytes = int.Parse(Configuration["AllowedFileSizeMBComponent"] ?? "100");
+            long bytes = megabytes * 1024 * 1024;
+            
             services.AddSignalR(e => {
-                e.MaximumReceiveMessageSize = (long?)3e+7;
+                e.MaximumReceiveMessageSize = bytes;
             });
 
             services.AddSweetAlert2();
