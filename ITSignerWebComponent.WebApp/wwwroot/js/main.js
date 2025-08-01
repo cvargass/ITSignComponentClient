@@ -22,7 +22,7 @@ setLoadingSigningButton = function () {
     signBtnView.classList.add("d-none");
 }
 
-
+/*
 downloadDocFile = function (fileDoc) {
     const byteCharacters = atob(fileDoc);
     const byteNumbers = new Array(byteCharacters.length);
@@ -34,6 +34,29 @@ downloadDocFile = function (fileDoc) {
     var file = new Blob([byteArray], { type: 'application/pdf' })
     var fileURL = URL.createObjectURL(file);
     window.open(fileURL);
+}
+*/
+
+downloadDocFile = function (fileDoc) {
+    if (!fileDoc || typeof fileDoc !== "string") {
+        console.error("fileDoc no es una cadena válida:", fileDoc);
+        return;
+    }
+
+    try {
+        const byteCharacters = atob(fileDoc);
+        const byteArray = new Uint8Array(byteCharacters.length);
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteArray[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const file = new Blob([byteArray], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(file);
+        window.open(fileURL);
+    } catch (error) {
+        console.error("Error al decodificar el archivo:", error);
+    }
 }
 
 setVisibleBtnDownloadDoc = function () {
