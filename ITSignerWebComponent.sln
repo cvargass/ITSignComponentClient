@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreFiles.API", "StoreFile
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StoreFiles.Core", "StoreFiles.Core\StoreFiles.Core.csproj", "{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientSignerApp", "ClientSignerApp\ClientSignerApp.csproj", "{72D476AD-397D-4EA1-B4A7-3E7BE72722DB}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupSignerApp", "SetupSignerApp\SetupSignerApp.vdproj", "{F3B90FCF-8807-40AD-983F-C7426190D193}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,12 @@ Global
 		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D8D456D-7F02-4CCB-A4C3-CFB4E39148E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72D476AD-397D-4EA1-B4A7-3E7BE72722DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72D476AD-397D-4EA1-B4A7-3E7BE72722DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72D476AD-397D-4EA1-B4A7-3E7BE72722DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72D476AD-397D-4EA1-B4A7-3E7BE72722DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3B90FCF-8807-40AD-983F-C7426190D193}.Debug|Any CPU.ActiveCfg = Debug
+		{F3B90FCF-8807-40AD-983F-C7426190D193}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
