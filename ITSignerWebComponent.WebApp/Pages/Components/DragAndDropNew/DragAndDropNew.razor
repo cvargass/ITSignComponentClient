@@ -1,0 +1,70 @@
+﻿@using BlazorBootstrap;
+
+@* <div class="container">
+    <p class="text-center">Si desea agregar un grafo al PDF, puede subirlo en formato .JPG y añadirlo posteriormente al documento a firmar</p>
+
+    <div class="wrapper-inputfile">
+        <InputFile OnChange="HandleFileSelected" accept=".jpg" />
+        @if (BytesImageGrafic != null)
+        {
+            <img src="@($"data:image/jpeg;base64,{Convert.ToBase64String(BytesImageGrafic)}")" alt="Grafic for PDF" style="width: 230px; max-height: 150px;" />
+        }
+    </div>
+</div> *@
+
+<div class="container">
+    <div class="m-3">
+        <div class="border rounded position-relative" style="background-color:#f7f7f9">
+            @*Zone items draggeables*@
+            <div class="drag-items-zone">
+                <p id="lbl-page">Página</p>
+                @foreach (var dragItem in dragItemsList)
+                {
+                    <div class="@dragItem.Class" id="@dragItem.Id">
+                        @if (@dragItem.Id == "drag-item-rubric")
+                        {
+                            <button class="drag-item__btn-close" id="btn-close" @onclick="() => DeleteDragitem(dragItem.Id)">
+                                <img class="img-close" src="./images/close_icon.png" alt="Close Icon">
+                            </button>
+                        }
+                        <span>@dragItem.Name</span>
+                        <img src="@dragItem.UrlIcon">
+                    </div>
+                }
+            </div>
+
+            @*Zone items draggeables*@
+            <div class="drag-drop-zone" id="dragger">
+                @*@Filename*@
+
+                @if (PreSignedDto.PdfToSign is not null)
+                {
+                    <PdfViewer Class="pdf-viewer-custom drag-drop-zone"
+                               Url="@string.Format("data:application/pdf;base64,{0}", PreSignedDto.PdfToSign)"
+                               OnPageChanged="OnPageChanged" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="btn-sign" class="d-flex justify-content-center align-items-center m-2" style="height:80px">
+    <button type="button" class="col-4 btn btn-success h-100" @onclick="SignDocument">
+        <div id="sign-btn-view">
+            Firmar Documento
+        </div>
+        <div id="loading-btn-view" class="d-none">
+            <div>
+                Firmando Documento...
+            </div>
+            <div class="spinner-grow spinner-grow-sm" style="width: 3rem; height: 3rem;" role="status"></div>
+        </div>
+    </button>
+</div>
+
+<div class="d-flex justify-content-center align-items-center m-2">
+    <button style="width:400px" id="btn-downloadDoc" type="button" class="btn btn-danger roll-in-blurred-left d-none" @onclick="DownloadDoc">
+        Descargar PDF
+        <img src="./images/doc_down_icon.png" style="width:140px; height:110px" alt="Download PDF Icon" />
+    </button>
+</div>

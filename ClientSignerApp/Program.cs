@@ -1,5 +1,6 @@
 using ClientSignerApp.Services.APIStoreFiles;
 using ClientSignerApp.Services.Logger;
+using ClientSignerApp.Services.QRGenerator;
 using ClientSignerApp.Services.Signer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,6 +47,7 @@ namespace ClientSignerApp
             services.AddTransient<SignerApp>();
             services.AddTransient<ILoggerService, LoggerService>();
             services.AddTransient<ISignerService, SignerService>();
+            services.AddTransient<IQRGeneratorService, QRGeneratorService>();
 
             services.AddHttpClient<IAPIStoreFilesService, APIStoreFilesService>(client =>
             {
@@ -61,11 +63,45 @@ namespace ClientSignerApp
             if (args.Length > 0)
             {
                 args[0] = args[0].Replace("appsigner:", "");
-                mainForm.SetGuidFiles(args[0].Split("_"));
+                var parameters = args[0].Split("_");
+
+                string type = parameters[0]; // massive/individual
+
+                if (type is not null
+                    && (type == "massive" || type == "individual"))
+                {
+                    mainForm.SetSigningType(type);
+                    mainForm.SetGuidFiles(parameters);
+                }
+                else
+                {
+                    MessageBox.Show("Parámetros inválidos para iniciar la aplicación. " + args[0]);
+                    return;
+                }
             }
             else
             {
-                mainForm.SetGuidFiles(new string[] { "27AGOSTO2025-0117CD24-2000-31", "true|6" });   //last param is signature configuration visible|idSignPosition
+                ///
+                // FOR TESTING PURPOSES 
+                ///
+
+                string type = "individual"; // massive/individual
+                mainForm.SetSigningType(type);
+
+                if (type == "massive")
+                {
+                    //ESTRUCTURE type_file1_file2_file3
+                    mainForm.SetGuidFiles(new string[] { "massive", "27AGOSTO2025-0117CD24-2000-31", "27AGOSTO2025-0117CD24-2000-32", "27AGOSTO2025-0117CD24-2000-33" });
+                }
+                else if (type == "individual")
+                {
+                    //ESTRUCTURE type_file1_page|x|y
+                    mainForm.SetGuidFiles(new string[] { "individual", "29AGOSTO2025-726AEF3F-2000-31", "1|50|50" });
+                } else
+                {
+                    MessageBox.Show("Parámetros inválidos para iniciar la aplicación.");
+                    return;
+                }
             }
 
             mainForm.Visible = false;

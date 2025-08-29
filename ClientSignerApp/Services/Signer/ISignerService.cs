@@ -2,6 +2,7 @@
 {
     public interface ISignerService
     {
-        byte[] SignWithSmartCard(byte[] file, string guidFile, bool signatureVisible = true, int signaturePosition = 6);
+        byte[] SignWithSmartCard(byte[] file, string guidFile);
+        byte[] SignFile(byte[] file, string guidFile, string dataPosition);
     }
 }

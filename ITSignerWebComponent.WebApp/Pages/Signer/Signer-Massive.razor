@@ -1,4 +1,4 @@
-﻿@page "/signer-file"
+﻿@page "/signer-files"
 @layout AppLayout
 
 <div class="container">
@@ -33,9 +33,18 @@
             <div id="form-signed-disabled" class="position-absolute h-100 w-100" style="background-color:#fff; z-index:1;opacity:0.4"></div>
 
             <div class="m-3">
-                <div>
+                <EditForm Model="@PreSignedDto" OnValidSubmit="ExecuteApp">
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+
                     <div class="row">
-                        <label for="doc-file" class="col-md-12 col-form-label">Documento(s) por firmar:</label>
+                        <label for="doc-file" class="col-md-10 col-form-label">Documento(s) por firmar:</label>
+
+                        <div class="row col-md-2">
+                            <label for="doc-file" class="col-md-12 col-form-label">Marcar todos:</label>
+                            <div class="col-md-2">
+                                <input class="cbx-mark-all" type="checkbox" @onchange="eventArgs => { onCheckBoxMarkAllChange(eventArgs.Value); }" />
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -70,9 +79,7 @@
                                                         <td class="text-center">@nameFile</td>
                                                         <td class="text-center">
                                                             <div class="form-check">
-                                                                <button type="button" class="btn btn-primary roll-in-blurred-left w-10" @onclick="() => LoadPDFViewerForSigning(nameFile)">
-                                                                    <img src="./images/search.png" style="width:20px; height:20px" alt="Icono Ver Lupa" />
-                                                                </button>
+                                                                <input class="form-check-input" type="checkbox" @onchange="eventArgs => { onCheckBoxChange(nameFile, eventArgs.Value); }" />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -84,13 +91,24 @@
                             </div>
                         }
                     </div>
-                </div>
+
+                    <div id="btn-sign" class="d-flex justify-content-center align-items-center m-2" style="height:80px">
+                        <button type="submit" class="col-6 btn btn-success h-100">
+                            <div id="sign-btn-view">
+                                Firmar Documento
+                            </div>
+                            <div id="loading-btn-view" class="d-none">
+                                <div>
+                                    Firmando Documentos...
+                                </div>
+                                <div class="spinner-grow spinner-grow-sm" style="width: 3rem; height: 3rem;" role="status"></div>
+                            </div>
+                        </button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     </div>
 </div>
 
-@if (ShowDragAndDropComponent)
-{
-    <ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew.DragAndDropNew Filename="@Filename"></ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew.DragAndDropNew>
-}
+

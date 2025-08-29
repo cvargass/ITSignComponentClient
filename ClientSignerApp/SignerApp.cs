@@ -14,8 +14,8 @@ namespace ClientSignerApp
         private readonly ILoggerService _loggerService;
         private readonly ISignerService _signerService;
         private readonly IConfiguration _configuration;
-        private bool _signatureVisible;
-        private int _signaturePosition;
+        private string SigningMode;
+        private string SignaturePosition;
 
         public SignerApp(IAPIStoreFilesService APIStoreFilesService,
                          ILoggerService loggerService,
@@ -60,33 +60,39 @@ namespace ClientSignerApp
         private void SignerApp_Load(object sender, EventArgs e)
         {
             LoadSigningConfiguration();
-            BeginSigningFiles();
+
+            if (this.SigningMode == "massive")
+            {
+                BeginSigningFiles();
+            }
+            else if (this.SigningMode == "individual")
+            {
+                BeginSigningFile();
+            } else
+            {
+                CloseApplication();
+            }
         }
 
         private void LoadSigningConfiguration()
         {
-            bool generateDefaultValues = false;
-            if (_guidFiles is not null && _guidFiles.Length > 0)
+            if (this.SigningMode == "massive")
             {
-                var lastParameter = _guidFiles.ToArray()[_guidFiles.Length - 1];
-
-                if (lastParameter.Contains("|"))
-                {
-                    var configParams = lastParameter.Split('|');
-                    _signatureVisible = configParams[0].ToLower() == "true" ? true : false;
-                    _signaturePosition = int.Parse(configParams[1]);
-                    _guidFiles = _guidFiles.Take(_guidFiles.Length - 1).ToArray(); //Elimina el último valor que es configuracion
-                }
-                else
-                    generateDefaultValues = true;
-
+                //ESTRUCTURE type_file1_file2_file3
+                //Remove first value {signigMode}
+                Range range = new Range(1, _guidFiles.Length);
+                _guidFiles = _guidFiles.Take(range).ToArray();
+            } 
+            else if (this.SigningMode == "individual")
+            {
+                //ESTRUCTURE type_file1_page|x|y
+                //Remove first and last value {signigMode...signaturePosition}
+                Range range = new Range(1, _guidFiles.Length - 1);
+                this.SignaturePosition = _guidFiles[_guidFiles.Length - 1];
+                _guidFiles = _guidFiles.Take(range).ToArray();
             } else
-                generateDefaultValues = true;
-
-            if (generateDefaultValues)
             {
-                _signatureVisible = _configuration["SignConfigurations:SignatureVisible"] is not null ? Convert.ToBoolean(_configuration["SignConfigurations:SignatureVisible"]) : true;
-                _signaturePosition = _configuration["SignConfigurations:SignDefaultPosition"] is not null ? Convert.ToInt32(_configuration["SignConfigurations:SignDefaultPosition"]) : 6;
+                CloseApplication();
             }
         }
 
@@ -98,7 +104,32 @@ namespace ClientSignerApp
 
                 if (!string.IsNullOrEmpty(strFile))
                 {
-                    byte[] signedFile = _signerService.SignWithSmartCard(Convert.FromBase64String(strFile), guidFile, _signatureVisible, _signaturePosition);
+                    byte[] signedFile = _signerService.SignWithSmartCard(Convert.FromBase64String(strFile), guidFile);
+
+                    if (signedFile is not null)
+                    {
+                        PostFileSignedDto postFileSignedDto = new PostFileSignedDto
+                        {
+                            PdfSignedBase64 = Convert.ToBase64String(signedFile),
+                            PdfGuid = guidFile
+                        };
+                        var fileResponse = await filesController.PostSignedFile(postFileSignedDto);
+                    }
+                }
+            }
+
+            CloseApplication();
+        }
+
+        private async void BeginSigningFile()
+        {
+            foreach (var guidFile in _guidFiles)
+            {
+                var strFile = await GetFile(guidFile);
+
+                if (!string.IsNullOrEmpty(strFile))
+                {
+                    byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition);
 
                     if (signedFile is not null)
                     {
@@ -118,6 +149,11 @@ namespace ClientSignerApp
         private void CloseApplication()
         {
             Application.Exit();
+        }
+
+        internal void SetSigningType(string type)
+        {
+            this.SigningMode = type;
         }
     }
 }

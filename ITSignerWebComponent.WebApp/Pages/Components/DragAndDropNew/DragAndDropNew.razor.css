@@ -1,0 +1,76 @@
+﻿.drag-items-zone {
+    background-color: #bfe4ff;
+    border-radius: 4px;
+    margin: 10px auto;
+    padding: 10px;
+    width: 400px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+#lbl-page {
+    position: absolute;
+    margin-left: -586px;
+    margin-top: 5px;
+}
+
+.drag-item {
+    width: 80px;
+    height: 80px;
+    background-color: #7fbeec;
+    border-radius: 4px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.drag-item span {
+    font-size: 10px;
+    color: white;
+}
+
+.drag-item img {
+    width: 50px;
+}
+
+.drag-drop-zone {
+    border: 2px dashed #7fbeec;
+    width: 700px;
+    height: 750px;
+    margin: 10px auto;
+}
+
+.drag-item__btn-close {
+    width: 18px;
+    height: 18px;
+    display: none;
+    position: absolute;
+    right: -7px;
+    bottom: 68px;
+    border: #bfe4ff 1px solid;
+    background-color: #d2e5f7;
+    border-radius: 5px;
+    border-style: hidden;
+}
+
+.drag-item__btn-close .img-close {
+    width: 25px;
+    height: 25px;
+    margin-left: -7px;
+    margin-top: -5px;
+}
+
+.wrapper-inputfile {
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    flex-direction:column;
+}
+
+
+.dropped:hover .drag-item__btn-close {
+    display: block;
+}
