@@ -104,8 +104,8 @@ namespace ClientSignerApp
                 }
             }
 
-            mainForm.Visible = false;
-            Application.Run(mainForm);
+            mainForm.SignDocument();
+            Application.Run();
         }
 
         private static bool IsUserAdministrator()

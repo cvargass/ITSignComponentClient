@@ -38,7 +38,7 @@
             Name = "SignerApp";
             StartPosition = FormStartPosition.Manual;
             Text = "SignerApp";
-            Load += SignerApp_Load;
+            //Load += SignerApp_Load;
             ResumeLayout(false);
         }
 

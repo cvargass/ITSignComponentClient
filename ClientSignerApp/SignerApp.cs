@@ -57,7 +57,7 @@ namespace ClientSignerApp
 
             return strFile;
         }
-        private void SignerApp_Load(object sender, EventArgs e)
+        public void SignDocument()
         {
             LoadSigningConfiguration();
 
