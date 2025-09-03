@@ -7,6 +7,7 @@ using ClientSignerApp.Services.Logger;
 using ClientSignerApp.Options;
 using System.Text;
 using ClientSignerApp.Services.QRGenerator;
+using System.Net;
 
 namespace ClientSignerApp.Services.Signer
 {
@@ -111,6 +112,8 @@ namespace ClientSignerApp.Services.Signer
 
                 if (dataPosition is not null)
                 {
+                    dataPosition = WebUtility.UrlDecode(dataPosition);
+                    //_logger.LogInformation("DataPosition:" + dataPosition);
                     int numberPage = Convert.ToInt32(dataPosition.Split("|")[0]);
                     int coordinateX = Convert.ToInt32(dataPosition.Split("|")[1]);
                     int CoordinateY = Convert.ToInt32(dataPosition.Split("|")[2]);
