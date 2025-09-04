@@ -44,7 +44,7 @@ namespace ITSignerWebComponent.SignApp
             });
 
             services.AddSweetAlert2();
-
+            services.AddSignalR();
 
             //Services
             services.AddBlazorBootstrap();
@@ -91,6 +91,7 @@ namespace ITSignerWebComponent.SignApp
             {
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapHub<NotifyHubService>("/notifyHub");
             });
         }
     }

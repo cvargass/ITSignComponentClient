@@ -106,8 +106,8 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew
                     parameters
                 );
 
-                int seconds = 6;
-                await ReloadPageAfterDelay(seconds);
+                //int seconds = 6;
+                //await ReloadPageAfterDelay(seconds);
             }
             catch (Exception ex)
             {

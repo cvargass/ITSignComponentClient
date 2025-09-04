@@ -3,6 +3,7 @@ using ClientSignerApp.DTOs.Sign;
 using ClientSignerApp.Services.APIStoreFiles;
 using ClientSignerApp.Services.Logger;
 using ClientSignerApp.Services.Signer;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
 
 namespace ClientSignerApp
@@ -57,24 +58,24 @@ namespace ClientSignerApp
 
             return strFile;
         }
-        public void SignDocument()
+        public async Task SignDocument()
         {
-            LoadSigningConfiguration();
+            await LoadSigningConfiguration();
 
             if (this.SigningMode == "massive")
             {
-                BeginSigningFiles();
+                await BeginSigningFiles();
             }
             else if (this.SigningMode == "individual")
             {
-                BeginSigningFile();
+                await BeginSigningFile();
             } else
             {
-                CloseApplication();
+               await CloseApplication();
             }
         }
 
-        private void LoadSigningConfiguration()
+        private async Task LoadSigningConfiguration()
         {
             if (this.SigningMode == "massive")
             {
@@ -92,11 +93,11 @@ namespace ClientSignerApp
                 _guidFiles = _guidFiles.Take(range).ToArray();
             } else
             {
-                CloseApplication();
+                await CloseApplication();
             }
         }
 
-        private async void BeginSigningFiles()
+        private async Task BeginSigningFiles()
         {
             foreach (var guidFile in _guidFiles)
             {
@@ -118,10 +119,10 @@ namespace ClientSignerApp
                 }
             }
 
-            CloseApplication();
+            await CloseApplication();
         }
 
-        private async void BeginSigningFile()
+        private async Task BeginSigningFile()
         {
             foreach (var guidFile in _guidFiles)
             {
@@ -143,12 +144,31 @@ namespace ClientSignerApp
                 }
             }
 
-            CloseApplication();
+            await CloseApplication();
         }
 
-        private void CloseApplication()
+        private async Task CloseApplication()
         {
+            await this.SendNotificationReloadPage();
             Application.Exit();
+        }
+
+        private async Task SendNotificationReloadPage()
+        {
+            try
+            {
+                var connection = new HubConnectionBuilder()
+                .WithUrl(_configuration["PageFiles:Url"])
+                .Build();
+
+                await connection.StartAsync();
+                await connection.InvokeAsync("ReloadPage");
+                await connection.DisposeAsync();
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogError(ex.Message);
+            }
         }
 
         internal void SetSigningType(string type)
