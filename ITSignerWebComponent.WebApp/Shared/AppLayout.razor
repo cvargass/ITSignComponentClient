@@ -1,5 +1,33 @@
 ﻿@inherits LayoutComponentBase
+@using StoreFiles.Core.Entities.HubSettings
+@inject HubSettings HubSettings
+@inject IJSRuntime JS
 
 <div>
     @Body
 </div>
+
+<script>
+    window.startSignalR = (hubUrl) => {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl)
+            .build();
+
+        connection.on("ReloadPage", () => {
+            location.reload();
+        });
+
+        connection.start().catch(err => console.error(err));
+    };
+</script>
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Llamamos al método JS pasando la URL del appsettings.json
+            await JS.InvokeVoidAsync("startSignalR", HubSettings.HubUrl);
+        }
+    }
+}

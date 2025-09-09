@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using StoreFiles.Core.Entities.HubSettings;
 using StoreFiles.Core.Services.Utils;
 using StoreFiles.Core.Services.Utils.QRGenerator;
 using System;
@@ -55,6 +57,9 @@ namespace ITSignerWebComponent.SignApp
             services.AddTransient<IEncryptorService, EncryptorService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
             services.AddTransient<IUtilsService, UtilsService>();
+
+            services.Configure<HubSettings>(Configuration.GetSection("SignalR"));
+            services.AddSingleton(sp =>sp.GetRequiredService<IOptions<HubSettings>>().Value);
 
             //Automapper
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

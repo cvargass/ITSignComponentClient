@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6274090130EF4312BE5DC673AA5E219C"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -46,12 +52,6 @@
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_EF03C3CF453E24C2D52547ACFC4BBE24"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -59,6 +59,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_302F35D7070CECBB2A0D210E32A6F885"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_EF03C3CF453E24C2D52547ACFC4BBE24"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -264,6 +270,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6274090130EF4312BE5DC673AA5E219C"
+            {
+            "SourcePath" = "8:..\\ClientSignerApp\\Icon\\CA.ico"
+            "TargetName" = "8:CA.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EF03C3CF453E24C2D52547ACFC4BBE24"
             {
             "AssemblyRegister" = "3:1"
@@ -363,7 +389,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SetupSignerApp"
         "ProductCode" = "8:{2967860C-3A48-4684-89D4-11BC7B959CAA}"
-        "PackageCode" = "8:{C6D61577-1F3E-4B48-A1CE-62A166BCC272}"
+        "PackageCode" = "8:{A08310F8-1764-477F-BBAE-DB08651ECA4B}"
         "UpgradeCode" = "8:{43149489-C87E-4169-A8CB-1A30AC7E1107}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -494,7 +520,7 @@
             "Target" = "8:_BED0E0EFA00D41B19AE10AB52CDA42E7"
             "Folder" = "8:_6FE11FDFD9C24FF985FC34F6043628A3"
             "WorkingFolder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
-            "Icon" = "8:"
+            "Icon" = "8:_6274090130EF4312BE5DC673AA5E219C"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_DC0E7B7E7FEF4CD6A78252EAED45ECA1"
@@ -508,7 +534,7 @@
             "Target" = "8:_BED0E0EFA00D41B19AE10AB52CDA42E7"
             "Folder" = "8:_2CE658E3D6594D0BA8418F5BD117572F"
             "WorkingFolder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
-            "Icon" = "8:"
+            "Icon" = "8:_6274090130EF4312BE5DC673AA5E219C"
             "Feature" = "8:"
             }
         }
