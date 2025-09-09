@@ -178,7 +178,7 @@
             "Sequence" = "3:2"
             "Identifier" = "8:_A66C96FD_82A4_441B_B584_30F4447CE91A"
             "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /URL_API=\"[URL_API]\" /URL_FRONT=\"[URL_FRONT]\""
             }
         }
         "DefaultFeature"
@@ -363,7 +363,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SetupSignerApp"
         "ProductCode" = "8:{2967860C-3A48-4684-89D4-11BC7B959CAA}"
-        "PackageCode" = "8:{E2F08BB9-3C38-4972-A652-AED9BDA7019B}"
+        "PackageCode" = "8:{C6D61577-1F3E-4B48-A1CE-62A166BCC272}"
         "UpgradeCode" = "8:{43149489-C87E-4169-A8CB-1A30AC7E1107}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
