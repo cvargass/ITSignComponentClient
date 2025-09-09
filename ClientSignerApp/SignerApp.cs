@@ -157,8 +157,9 @@ namespace ClientSignerApp
         {
             try
             {
+                var url = _configuration["PageFiles:Url"] + "/notifyHub";
                 var connection = new HubConnectionBuilder()
-                .WithUrl(_configuration["PageFiles:Url"])
+                .WithUrl(url)
                 .Build();
 
                 await connection.StartAsync();
