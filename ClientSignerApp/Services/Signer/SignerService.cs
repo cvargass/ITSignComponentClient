@@ -103,8 +103,8 @@ namespace ClientSignerApp.Services.Signer
 
                 //load the PDF document
                 ps.LoadPdfDocument(file);
-                //ps.SigningReason = _SignOptions.SigningReason;
-                //ps.SigningLocation = _SignOptions.SigningLocation;
+                ps.SigningReason = _configuration["InfoSignature:Reason"];
+                ps.SigningLocation = _configuration["InfoSignature:Location"];
                 ps.VisibleSignature = true;
                 ps.SignatureImage = bytesQR;
                 ps.SignatureImageType = SignatureImageType.ImageAndText;
@@ -161,8 +161,8 @@ namespace ClientSignerApp.Services.Signer
                     }
 
                     _textQr = _textQr.Replace("[NAME]", issuerName);
-                    _textQr = _textQr.Replace("[REASON]", _SignOptions.SigningReason);
-                    _textQr = _textQr.Replace("[LOCATION]", _SignOptions.SigningLocation);
+                    _textQr = _textQr.Replace("[REASON]", _configuration["InfoSignature:Reason"]);
+                    _textQr = _textQr.Replace("[LOCATION]", _configuration["InfoSignature:Location"]);
                     _textQr = _textQr.Replace("[DATE]", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK"));
 
                     certificateInfo = _textQr;

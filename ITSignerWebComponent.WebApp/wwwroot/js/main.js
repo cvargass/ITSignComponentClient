@@ -101,3 +101,27 @@ setAllCheckboxesCbValue = function (flag) {
         checkbox.checked = flag;
     });
 }
+
+showConfirmSwall = function (title, text, icon) {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No'
+    });
+}
+
+showSuccessSwall = function (title, text) {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'success',
+        timer: 3000,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Aceptar'
+    });
+}
