@@ -18,6 +18,7 @@ namespace ClientSignerApp.Services.Signer
         private readonly IConfiguration _configuration;
         private string _textQr;
         private IQRGeneratorService _qrGeneratorService;
+        private X509Certificate2 DigitalSignatureCertificate { get; set; }
 
         public SignerService(ILoggerService logger,
                            IOptions<SignOptions> options,
@@ -65,7 +66,14 @@ namespace ClientSignerApp.Services.Signer
             try
             {
                 ps.VisibleSignature = false;
-                ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+                if (this.DigitalSignatureCertificate is null)
+                {
+                    ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+                    this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+                } else
+                {
+                    ps.DigitalSignatureCertificate = this.DigitalSignatureCertificate;
+                }
 
                 if (ps.DigitalSignatureCertificate == null)
                     throw new InvalidOperationException("No se ha seleccionado ningún certificado.");
@@ -92,7 +100,16 @@ namespace ClientSignerApp.Services.Signer
             try
             {
                 PdfSignature ps = new PdfSignature(_configuration["SignConfigurations:SerialNumber"]);
-                ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+
+                if (this.DigitalSignatureCertificate is null)
+                {
+                    ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+                    this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+                }
+                else
+                {
+                    ps.DigitalSignatureCertificate = this.DigitalSignatureCertificate;
+                }
 
                 if (ps.DigitalSignatureCertificate == null)
                     throw new InvalidOperationException("No se ha seleccionado ningún certificado.");
