@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_23C1F837651F401BA329463EA6443499"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_302F35D7070CECBB2A0D210E32A6F885"
         "OwnerKey" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
         "MsmSig" = "8:_UNDEFINED"
@@ -34,6 +28,12 @@
         "Entry"
         {
         "MsmKey" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_8A2E51BEC100404F8A6AD61F41A67D40"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -144,6 +144,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_0D11FF8F296B4C8ABDCC3F552FFD0EC7"
+            {
+            "Name" = "8:Resultado principal from InstallerActions (Active)"
+            "Condition" = "8:"
+            "Object" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:2"
+            "Identifier" = "8:_A66C96FD_82A4_441B_B584_30F4447CE91A"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /URL_API=\"[URL_API]\" /URL_FRONT=\"[URL_FRONT]\""
+            }
             "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_2D2FFA73BB864DD6AA1CE1350FEE0E5F"
             {
             "Name" = "8:Publicar elementos from ClientSignerApp (Active)"
@@ -158,33 +172,19 @@
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:"
             }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_873DBA0A97674C8DB79CDC08677FACD1"
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D4A389AA8AD44441BE75EF6C380377F6"
             {
             "Name" = "8:windowsdesktop-runtime-7.0.20-win-x64.exe"
             "Condition" = "8:"
-            "Object" = "8:_23C1F837651F401BA329463EA6443499"
+            "Object" = "8:_8A2E51BEC100404F8A6AD61F41A67D40"
             "FileType" = "3:2"
             "InstallAction" = "3:1"
             "Arguments" = "8:/install /quiet /norestart"
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
-            "Identifier" = "8:_7B425650_5C63_4A62_802D_FC934479E111"
+            "Identifier" = "8:_1E60852F_98DD_4859_94FB_DC2D669907AB"
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D8AF5E6210E14BCBA492C9FDB3FDC54E"
-            {
-            "Name" = "8:Resultado principal from InstallerActions (Active)"
-            "Condition" = "8:"
-            "Object" = "8:_808EED41F11E4AAEB627EDF26C48CB29"
-            "FileType" = "3:1"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:2"
-            "Identifier" = "8:_A66C96FD_82A4_441B_B584_30F4447CE91A"
-            "InstallerClass" = "11:TRUE"
-            "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /URL_API=\"[URL_API]\" /URL_FRONT=\"[URL_FRONT]\""
             }
         }
         "DefaultFeature"
@@ -219,26 +219,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_23C1F837651F401BA329463EA6443499"
-            {
-            "SourcePath" = "8:C:\\Users\\developer4\\Downloads\\windowsdesktop-runtime-7.0.20-win-x64.exe"
-            "TargetName" = "8:windowsdesktop-runtime-7.0.20-win-x64.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_302F35D7070CECBB2A0D210E32A6F885"
             {
             "AssemblyRegister" = "3:1"
@@ -274,6 +254,26 @@
             {
             "SourcePath" = "8:..\\ClientSignerApp\\Icon\\CA.ico"
             "TargetName" = "8:CA.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A2E51BEC100404F8A6AD61F41A67D40"
+            {
+            "SourcePath" = "8:..\\ClientSignerApp\\windowsdesktop-runtime-7.0.20-win-x64.exe"
+            "TargetName" = "8:windowsdesktop-runtime-7.0.20-win-x64.exe"
             "Tag" = "8:"
             "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
             "Condition" = "8:"

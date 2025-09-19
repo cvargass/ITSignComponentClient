@@ -14,8 +14,11 @@
             .build();
 
         connection.on("ReloadPage", () => {
-            location.reload();
             showSuccessSwall("Success", "¡ Archivo Firmado Correctamente !");
+
+            setTimeout(()=> {
+                location.reload();
+            }, 2000)
         });
 
         connection.start().catch(err => console.error(err));
