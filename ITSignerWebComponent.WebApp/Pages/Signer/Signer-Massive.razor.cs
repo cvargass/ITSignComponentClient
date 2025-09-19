@@ -202,8 +202,8 @@ namespace ITSignerWebComponent.SignApp.Pages.Signer
                         parameters
                     );
 
-                    int seconds = this.SelectedFiles.Count * 2;
-                    await ReloadPageAfterDelay(seconds);
+                    //int seconds = this.SelectedFiles.Count * 2;
+                    //await ReloadPageAfterDelay(seconds);
                 }
                 catch (Exception ex)
                 {
