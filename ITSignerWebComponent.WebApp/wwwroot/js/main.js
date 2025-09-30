@@ -59,6 +59,29 @@ downloadDocFile = function (fileDoc) {
     }
 }
 
+downloadDocSignedFile = function () {
+    var fileDoc = sessionStorage.getItem("FileSigned");
+    if (!fileDoc || typeof fileDoc !== "string") {
+        console.error("fileDoc no es una cadena válida:", fileDoc);
+        return;
+    }
+
+    try {
+        const byteCharacters = atob(fileDoc);
+        const byteArray = new Uint8Array(byteCharacters.length);
+
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteArray[i] = byteCharacters.charCodeAt(i);
+        }
+
+        const file = new Blob([byteArray], { type: 'application/pdf' });
+        const fileURL = URL.createObjectURL(file);
+        window.open(fileURL);
+    } catch (error) {
+        console.error("Error al decodificar el archivo:", error);
+    }
+}
+
 setVisibleBtnDownloadDoc = function () {
     document.getElementById("btn-sign").outerHTML = "";
     document.getElementById("btn-downloadDoc").classList.remove("d-none");
@@ -124,4 +147,81 @@ showSuccessSwall = function (title, text) {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Aceptar'
     });
+}
+
+showErrorSwall = function (title, text) {
+    return Swal.fire({
+        title: title,
+        text: text,
+        icon: 'error',
+        timer: 3000,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Aceptar'
+    });
+}
+
+onFinalizeClientSigning = async function (urlGetSignedFile) {
+    try {
+
+        var guidPendingFile = getCookie("GuidPendingFile");
+        //console.log(guidPendingFile);
+        if (window.location.toString().includes("signer-file?") && guidPendingFile) {
+            const response = await fetch(urlGetSignedFile + guidPendingFile);
+            const responseJson = await response.json();
+            sessionStorage.setItem("FileSigned", responseJson.fileBase64);
+            showSuccessSwall("Success", "¡ Archivo Firmado Correctamente !");
+            setVisibleBtnDownloadDoc();
+        } else {
+             showSuccessSwall("Success", "¡ Archivos Firmados Correctamente !");
+
+             setTimeout(()=> {
+                 location.reload();
+             }, 2000)
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        showErrorSwall("Error.", "Ha ocurrido un inconveniente firmando el documento.");
+        setTimeout(() => {
+            setTimeout(() => {
+                location.reload();
+            }, 3000)
+        });
+    }
+}
+
+setGuidPendingSigning = function (guid) {
+    //console.log("Guardando GUID en cookie:", guid);
+    setCookie("GuidPendingFile", guid);
+}
+
+clearGuidPendingSigning = function () {
+    document.cookie = "GuidPendingFile=; Max-Age=-99999999; path=/";
+}
+
+clearFileSigned = function () {
+    sessionStorage.removeItem("FileSigned");
+}
+
+function setCookie(name, value, minutes) {
+    let expires = "";
+    if (minutes) {
+        const date = new Date();
+        date.setTime(date.getTime() + (minutes * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+
+    var cookie = name + "=" + (value || "") + expires + "; path=/"
+    document.cookie = cookie;
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
 }

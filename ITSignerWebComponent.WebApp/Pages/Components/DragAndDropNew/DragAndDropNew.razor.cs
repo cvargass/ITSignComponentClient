@@ -47,12 +47,15 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew
         public List<DragItem> AlldragItemsEnableList { get; set; } = new List<DragItem>();
         public List<DragItem> dragItemsList { get; set; } = new List<DragItem>();
         public int NumberPage { get; set; } = 1;
+        public bool IsBtnSigningDisabled { get; set; } = false;
 
 
         protected async override void OnInitialized()
         {
             await this.LoadAllDragItemsEnable();
             await this.loadDragItem("drag-item-rubric");
+            await _jsRuntime.InvokeVoidAsync("clearGuidPendingSigning");
+            await _jsRuntime.InvokeVoidAsync("clearFileSigned");
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -88,6 +91,9 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew
             try
             {
                 await _jsRuntime.InvokeVoidAsync("setLoadingSigningButton");
+                await _jsRuntime.InvokeVoidAsync("setGuidPendingSigning", Filename);
+
+                IsBtnSigningDisabled = true;
 
                 var strInfoPositions = await _jsRuntime.InvokeAsync<string>("GetPositionSignature");
                 AxisPosition position = new AxisPosition() { CoordinateX = 10, CoordinateY = 10 }; // Default position if none is provided
@@ -142,7 +148,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew
 
         public async void DownloadDoc()
         {
-            await _jsRuntime.InvokeVoidAsync("downloadDocFile", Base64DocSigned);
+            await _jsRuntime.InvokeVoidAsync("downloadDocSignedFile");
         }
 
         private async Task HandleFileSelected(InputFileChangeEventArgs e)

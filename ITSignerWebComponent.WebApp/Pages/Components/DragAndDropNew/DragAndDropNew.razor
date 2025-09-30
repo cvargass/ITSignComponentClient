@@ -49,7 +49,7 @@
 </div>
 
 <div id="btn-sign" class="d-flex justify-content-center align-items-center m-2" style="height:80px">
-    <button type="button" class="col-4 btn btn-success h-100" @onclick="SignDocument">
+    <button type="button" class="col-4 btn btn-success h-100" @onclick="SignDocument" id="btn-sign" disabled="@IsBtnSigningDisabled">
         <div id="sign-btn-view">
             Firmar Documento
         </div>

@@ -1,24 +1,23 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.Extensions.Configuration
 @using StoreFiles.Core.Entities.HubSettings
 @inject HubSettings HubSettings
 @inject IJSRuntime JS
+@inject IConfiguration configuration;
+
 
 <div>
     @Body
 </div>
 
 <script>
-    window.startSignalR = (hubUrl) => {
+    window.startSignalR = (hubUrl, urlGetSignedFile) => {
         const connection = new signalR.HubConnectionBuilder()
-            .withUrl(hubUrl)
-            .build();
+        .withUrl(hubUrl)
+        .build();
 
-        connection.on("ReloadPage", () => {
-            showSuccessSwall("Success", "¡ Archivo Firmado Correctamente !");
-
-            setTimeout(()=> {
-                location.reload();
-            }, 2000)
+        connection.on("ReloadPage", async () => {
+            await onFinalizeClientSigning(urlGetSignedFile);
         });
 
         connection.start().catch(err => console.error(err));
@@ -30,8 +29,9 @@
     {
         if (firstRender)
         {
-            // Llamamos al método JS pasando la URL del appsettings.json
-            await JS.InvokeVoidAsync("startSignalR", HubSettings.HubUrl);
+            var urlGetSignedFile = configuration["APIStoreFiles:BaseUrl"] + "/api/pades/signed-file/";
+
+            await JS.InvokeVoidAsync("startSignalR", HubSettings.HubUrl, urlGetSignedFile);
         }
     }
 }
