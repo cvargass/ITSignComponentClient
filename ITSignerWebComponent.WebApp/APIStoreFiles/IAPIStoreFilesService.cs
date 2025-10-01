@@ -2,6 +2,7 @@
 using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using System.Threading.Tasks;
 
 namespace ITSignerWebComponent.SignApp.APIStoreFiles
@@ -14,5 +15,6 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
         Task<(bool, string)> PostFile(PostFileDto postFileDto, string typeFile);
         Task<bool> PostSignedFile(PostFileSignedDto postFileSignedDto, string typeFile);
         Task<FileForSigningResponse> SignFile(FileForSigningDto fileForSigningDto, string typeFile);
+        Task<bool> UpdatePendingFile(UpdateFilePendingDto updateFilePendingDto, string fileType);
     }
 }

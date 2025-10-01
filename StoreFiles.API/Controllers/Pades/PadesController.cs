@@ -2,6 +2,7 @@
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.DTOs.Sign;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using StoreFiles.Core.QueryFilters;
 using StoreFiles.Core.Services.Sign;
 using StoreFiles.Core.Services.StoreFiles;
@@ -72,6 +73,15 @@ namespace StoreFiles.API.Controllers.StoreFiles
         public IActionResult PostFileSigned(PostFileSignedDto postFileSignedDto)
         {
             _storeFileService.StoreFileSigned(postFileSignedDto, "[PADES]");
+
+            return Ok(new { Message = "¡ Archivo firmado almacenado correctamente !" });
+        }
+
+        [RequestSizeLimit(104857600)] // 100 MB
+        [HttpPut("upload-file-pending")]
+        public IActionResult UpdateFilePending(UpdateFilePendingDto updateFilePendingDto)
+        {
+            _storeFileService.UpdateFilePending(updateFilePendingDto, "[PADES]");
 
             return Ok(new { Message = "¡ Archivo firmado almacenado correctamente !" });
         }

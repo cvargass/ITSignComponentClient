@@ -168,11 +168,19 @@ onFinalizeClientSigning = async function (urlGetSignedFile) {
         if (window.location.toString().includes("signer-file?") && guidPendingFile) {
             const response = await fetch(urlGetSignedFile + guidPendingFile);
             const responseJson = await response.json();
-            sessionStorage.setItem("FileSigned", responseJson.fileBase64);
-            showSuccessSwall("Success", "¡ Archivo Firmado Correctamente !");
-            setVisibleBtnDownloadDoc();
+            if (responseJson.fileBase64) {
+                sessionStorage.setItem("FileSigned", responseJson.fileBase64);
+                showSuccessSwall("Exitoso", "¡ Archivo Firmado Correctamente !");
+                setVisibleBtnDownloadDoc();
+            } else {
+                showErrorSwall("Error.", "Ha ocurrido un inconveniente firmando el documento.");
+
+                setTimeout(() => {
+                    location.reload();
+                }, 3000)
+            }
         } else {
-             showSuccessSwall("Success", "¡ Archivos Firmados Correctamente !");
+            showSuccessSwall("Exitoso", "¡ Archivos Firmados Correctamente !");
 
              setTimeout(()=> {
                  location.reload();

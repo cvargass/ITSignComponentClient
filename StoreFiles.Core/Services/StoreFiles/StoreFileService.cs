@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using StoreFiles.Core.Exceptions;
 using StoreFiles.Core.QueryFilters;
 using StoreFiles.Core.Services.StoreFiles;
@@ -178,6 +179,26 @@ namespace StoreFiles.API.Services.StoreFiles
                 File.Delete(filePendingPath);
 
                 using var writer = new BinaryWriter(File.OpenWrite(fileSignedPath));
+                writer.Write(file);
+            }
+            catch (Exception ex)
+            {
+                throw new InternalErrorException(ex.Message);
+            }
+        }
+
+        public void UpdateFilePending(UpdateFilePendingDto updateFilePendingDto, string typeFile)
+        {
+            try
+            {
+                ValidateExistingSignedFolder();
+
+                byte[] file = Convert.FromBase64String(updateFilePendingDto.PdfSignedBase64);
+                string filePendingPath = GeneratePathPendingFile(updateFilePendingDto.PdfGuid, typeFile);
+
+                File.Delete(filePendingPath);
+
+                using var writer = new BinaryWriter(File.OpenWrite(filePendingPath));
                 writer.Write(file);
             }
             catch (Exception ex)

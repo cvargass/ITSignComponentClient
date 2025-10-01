@@ -79,6 +79,13 @@ namespace StoreFiles.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "StoreFiles.API v1"));
             }
 
+            app.UseCors(builder =>
+            {
+                builder.WithOrigins(Configuration["CORS:FrontendUrl"])
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+
             app.UseHttpsRedirection();
 
             app.UseRouting();

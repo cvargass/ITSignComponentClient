@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using SignerPDF.DigitalSignature.Core.Domain.AxisPosition;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using StoreFiles.Core.Services.Utils;
 using System;
 using System.Collections.Generic;
@@ -95,15 +96,25 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropNew
 
                 IsBtnSigningDisabled = true;
 
+                //SignaturePosition
                 var strInfoPositions = await _jsRuntime.InvokeAsync<string>("GetPositionSignature");
                 AxisPosition position = new AxisPosition() { CoordinateX = 10, CoordinateY = 10 }; // Default position if none is provided
-
                 if (strInfoPositions is not null)
                 {
                     var infoPositions = JsonConvert.DeserializeObject<AxisPosition>(strInfoPositions);
                     position = infoPositions;
                 }
 
+                //GraficPosition
+                var strInfoPositionsGrafic = await _jsRuntime.InvokeAsync<string>("GetPositionGrafic");
+                if (strInfoPositionsGrafic is not null && BytesImageGrafic is not null)
+                {
+                    var infoPositionsGrafic = JsonConvert.DeserializeObject<StoreFiles.Core.Entities.AxisPosition.AxisPosition>(strInfoPositionsGrafic);
+                    infoPositionsGrafic.NumberPage = NumberPage;
+                    var pdfWithImage = _UtilsService.WriteImageInPDFCordinates(Convert.FromBase64String(this.PreSignedDto.PdfToSign), BytesImageGrafic, 140, 100, infoPositionsGrafic);
+                    await _apiStoreFilesService.UpdatePendingFile(new UpdateFilePendingDto { PdfGuid = Filename, PdfSignedBase64 = Convert.ToBase64String(pdfWithImage) }, "pades");
+                }
+                
                 var parameters = this.GenerateParameters(position);
 
                 var result = await _jsRuntime.InvokeAsync<string>(

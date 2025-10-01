@@ -4,6 +4,7 @@ using Microsoft.JSInterop;
 using StoreFiles.Core.DTOs.FileForSigning;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -126,6 +127,22 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return flag;
         }
 
+        public async Task<bool> UpdatePendingFile(UpdateFilePendingDto updateFilePendingDto, string fileType)
+        {
+            bool flag = false;
+            string url = GenerateUrl($"api/{fileType}/upload-file-pending");
+
+            var response = await httpClient.PutAsJsonAsync(url, updateFilePendingDto);
+
+            if (response.IsSuccessStatusCode)
+                flag = true;
+            else
+            {
+                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
+            }
+
+            return flag;
+        }
 
         public async Task<FileForSigningResponse> SignFile(FileForSigningDto fileForSigningDto, string typeFile)
         {

@@ -1,5 +1,6 @@
 ﻿using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
+using StoreFiles.Core.DTOs.UpdateFilePending;
 using StoreFiles.Core.QueryFilters;
 
 namespace StoreFiles.Core.Services.StoreFiles
@@ -11,5 +12,6 @@ namespace StoreFiles.Core.Services.StoreFiles
         (bool flag, byte[] bytesFile) GetFile(string guidFile, string typeFile, bool isSigned = false);
         void StoreFileSigned(PostFileSignedDto postFileSignedDto, string typeFile);
         void StoreFileSignedAPI(byte[] pdfSignedBase64);
+        void UpdateFilePending(UpdateFilePendingDto updateFilePendingDto, string typeFile);
     }
 }
