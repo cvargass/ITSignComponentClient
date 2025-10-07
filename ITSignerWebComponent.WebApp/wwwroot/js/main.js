@@ -160,7 +160,7 @@ showErrorSwall = function (title, text) {
     });
 }
 
-onFinalizeClientSigning = async function (urlGetSignedFile) {
+onFinalizeClientSigning = async function (urlGetSignedFile, secondsReloadAfterSign) {
     try {
 
         var guidPendingFile = getCookie("GuidPendingFile");
@@ -172,6 +172,11 @@ onFinalizeClientSigning = async function (urlGetSignedFile) {
                 sessionStorage.setItem("FileSigned", responseJson.fileBase64);
                 showSuccessSwall("Exitoso", "¡ Archivo Firmado Correctamente !");
                 setVisibleBtnDownloadDoc();
+
+                var seconds = secondsReloadAfterSign * 1000;
+                setTimeout(() => {
+                    location.reload();
+                }, seconds);
             } else {
                 showErrorSwall("Error.", "Ha ocurrido un inconveniente firmando el documento.");
 

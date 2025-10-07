@@ -11,13 +11,13 @@
 </div>
 
 <script>
-    window.startSignalR = (hubUrl, urlGetSignedFile) => {
+    window.startSignalR = (hubUrl, urlGetSignedFile, secondsReloadAfterSign) => {
     const connection = new signalR.HubConnectionBuilder()
     .withUrl(hubUrl)
     .build();
 
     connection.on("ReloadPage", async () => {
-    await onFinalizeClientSigning(urlGetSignedFile);
+    await onFinalizeClientSigning(urlGetSignedFile, secondsReloadAfterSign);
     });
 
     connection.start().catch(err => console.error(err));
@@ -31,13 +31,14 @@
         {
             var urlGetSignedFile = string.Empty;
             var urlApiDomain = configuration["APIStoreFiles:Domain"];
+            var secondsReloadAfterSign = configuration["ReloadAfterSign:Seconds"];
 
             if (String.IsNullOrEmpty(urlApiDomain))
                 urlGetSignedFile = configuration["APIStoreFiles:BaseUrl"] + "/api/pades/signed-file/";
             else 
                 urlGetSignedFile = configuration["APIStoreFiles:BaseUrl"] + "/" + urlApiDomain + "/api/pades/signed-file/";
 
-            await JS.InvokeVoidAsync("startSignalR", HubSettings.HubUrl, urlGetSignedFile);
+            await JS.InvokeVoidAsync("startSignalR", HubSettings.HubUrl, urlGetSignedFile, secondsReloadAfterSign);
         }
     }
 }
