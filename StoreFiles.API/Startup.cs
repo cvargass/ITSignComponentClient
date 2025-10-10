@@ -56,11 +56,6 @@ namespace StoreFiles.API
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
             services.AddTransient<IWriterQRService, WriterQRService>();
 
-            services.AddServerSideBlazor(options => {
-                 options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(10); // 10 minutos
-                 options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(30); // Retención de circuito
-             });
-
             services.Configure<SignOptions>(Configuration.GetSection("SignConfigurations"));
 
             services.AddSwaggerGen(c =>
