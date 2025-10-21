@@ -52,6 +52,7 @@ builder.Services.AddTransient<IComponentManagerService, ComponentManagerService>
 
 builder.Services.Configure<HubSettings>(configuration.GetSection("SignalR"));
 builder.Services.AddSingleton(sp => sp.GetRequiredService<IOptions<HubSettings>>().Value);
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

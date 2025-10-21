@@ -1,4 +1,10 @@
 ﻿@namespace ITSignerWebComponent.SignApp.Pages
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    var pathBase = HttpContextAccessor.HttpContext?.Request?.PathBase.Value ?? "";
+    if (!pathBase.EndsWith("/")) pathBase += "/";
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,7 +12,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ITSigner | WebComponent</title>
-    <base href="/" />
+    <base href="@pathBase" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
@@ -46,9 +52,9 @@
 
     <!-- Dragger -->
     <script src="https://unpkg.com/interactjs/dist/interact.min.js"></script>
-    <script src="/js/Dragger.js"></script>
+    <script src="js/Dragger.js"></script>
 
-    <script src="/js/clickonce-handler.js"></script>
+    <script src="js/clickonce-handler.js"></script>
     <!-- SignalR  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
     @* <script src="/js/SignalR.js"></script> *@
