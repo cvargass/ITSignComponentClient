@@ -1,4 +1,5 @@
 ﻿using ClientSignerApp.DTOs.Sign;
+using ClientSignerApp.DTOs.Tsa;
 using ClientSignerApp.Services.APIStoreFiles;
 using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
@@ -49,6 +50,29 @@ namespace ClientSignerApp.Controllers
                 flag = true;
 
             return flag;
+        }
+
+        public async Task<TsaDataDto?> GetTSAParams()
+        {
+            string paramName = "TimeStamping";
+            string url = $"{_baseUrl}/api/params/{paramName}";
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var tsaParamsResponse = await response.Content.ReadFromJsonAsync<TsaDataDto>();
+                    return tsaParamsResponse;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

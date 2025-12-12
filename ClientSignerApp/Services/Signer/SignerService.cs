@@ -8,6 +8,7 @@ using ClientSignerApp.Options;
 using System.Text;
 using ClientSignerApp.Services.QRGenerator;
 using System.Net;
+using ClientSignerApp.DTOs.Tsa;
 
 namespace ClientSignerApp.Services.Signer
 {
@@ -18,6 +19,8 @@ namespace ClientSignerApp.Services.Signer
         private readonly IConfiguration _configuration;
         private string _textQr;
         private IQRGeneratorService _qrGeneratorService;
+        private string _serialNumber;
+
         private X509Certificate2 DigitalSignatureCertificate { get; set; }
 
         public SignerService(ILoggerService logger,
@@ -30,6 +33,7 @@ namespace ClientSignerApp.Services.Signer
             _configuration = configuration;
             _textQr = configuration["QrConfiguration:Text"].ToString();
             _qrGeneratorService = qrGeneratorService;
+            _serialNumber = _configuration["SignConfigurations:SerialNumber"];
         }
 
         private SignaturePosition GetSignPosition(int? idPositionSign)
@@ -56,12 +60,12 @@ namespace ClientSignerApp.Services.Signer
             }
         }
 
-        public byte[] SignWithSmartCard(byte[] file, string guidFile)
+        public byte[] SignWithSmartCard(byte[] file, string guidFile, TsaDataDto? tsaDataDto)
         {
             byte[] bytesFileSigned = null;
             X509Certificate2Collection certificates = null;
             //PdfSignature ps = new PdfSignature(_SignOptions.SerialNumber);
-            PdfSignature ps = new PdfSignature(_configuration["SignConfigurations:SerialNumber"]);
+            PdfSignature ps = new PdfSignature(_serialNumber);
 
             try
             {
@@ -80,6 +84,9 @@ namespace ClientSignerApp.Services.Signer
 
                 ps.LoadPdfDocument(file);
                 bytesFileSigned = ps.ApplyDigitalSignature();
+
+                if (tsaDataDto is not null)
+                    bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
             }
             catch (Exception ex)
             {
@@ -90,7 +97,7 @@ namespace ClientSignerApp.Services.Signer
             return bytesFileSigned;
         }
 
-        public byte[] SignFile(byte[] file, string guidFile, string dataPosition)
+        public byte[] SignFile(byte[] file, string guidFile, string dataPosition, TsaDataDto? tsaDataDto)
         {
             byte[] bytesFileSigned = null;
 
@@ -99,7 +106,7 @@ namespace ClientSignerApp.Services.Signer
 
             try
             {
-                PdfSignature ps = new PdfSignature(_configuration["SignConfigurations:SerialNumber"]);
+                PdfSignature ps = new PdfSignature(_serialNumber);
 
                 if (this.DigitalSignatureCertificate is null)
                 {
@@ -146,6 +153,9 @@ namespace ClientSignerApp.Services.Signer
                 ps.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
 
                 bytesFileSigned = ps.ApplyDigitalSignature();
+
+                if (tsaDataDto is not null)
+                    bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
             }
             catch (Exception ex)
             {
@@ -191,6 +201,27 @@ namespace ClientSignerApp.Services.Signer
             }
 
             return certificateInfo;
+        }
+
+        public byte[] ApplyTSASignature(byte[] pdf, TsaDataDto tsaDataDto)
+        {
+            byte[] bytesTSASignedPDF = null;
+            try
+            {
+                PdfSignature ps = new PdfSignature(_serialNumber);
+                ps.LoadPdfDocument(pdf);
+
+                //Timestamp Signature
+                ps.TimeStamping.ServerUrl = new Uri(tsaDataDto.UrlTsaServer);
+                ps.TimeStamping.UserName = tsaDataDto.User;
+                ps.TimeStamping.Password = tsaDataDto.Password;
+                bytesTSASignedPDF = ps.ApplyTimestampSignature();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message, ex);
+            }
+            return bytesTSASignedPDF;
         }
     }
 }

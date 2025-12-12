@@ -1,5 +1,6 @@
 using ClientSignerApp.Controllers;
 using ClientSignerApp.DTOs.Sign;
+using ClientSignerApp.DTOs.Tsa;
 using ClientSignerApp.Services.APIStoreFiles;
 using ClientSignerApp.Services.Logger;
 using ClientSignerApp.Services.Signer;
@@ -17,6 +18,7 @@ namespace ClientSignerApp
         private readonly IConfiguration _configuration;
         private string SigningMode;
         private string SignaturePosition;
+        private TsaDataDto? tsaParams;
 
         public SignerApp(IAPIStoreFilesService APIStoreFilesService,
                          ILoggerService loggerService,
@@ -61,6 +63,7 @@ namespace ClientSignerApp
         public async Task SignDocument()
         {
             await LoadSigningConfiguration();
+            tsaParams = await filesController.GetTSAParams();
 
             if (this.SigningMode == "massive")
             {
@@ -105,7 +108,7 @@ namespace ClientSignerApp
 
                 if (!string.IsNullOrEmpty(strFile))
                 {
-                    byte[] signedFile = _signerService.SignWithSmartCard(Convert.FromBase64String(strFile), guidFile);
+                    byte[] signedFile = _signerService.SignWithSmartCard(Convert.FromBase64String(strFile), guidFile, tsaParams);
 
                     if (signedFile is not null)
                     {
@@ -130,7 +133,7 @@ namespace ClientSignerApp
 
                 if (!string.IsNullOrEmpty(strFile))
                 {
-                    byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition);
+                    byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition, tsaParams);
 
                     if (signedFile is not null)
                     {
