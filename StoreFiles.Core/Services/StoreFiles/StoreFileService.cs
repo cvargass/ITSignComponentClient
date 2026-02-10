@@ -41,7 +41,8 @@ namespace StoreFiles.API.Services.StoreFiles
 
                 if (file.Length <= _allowedFileSizeMBComponent)
                 {
-                    string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp);
+                    bool isLTA = postFileDto.TypeSignature is not null && postFileDto.TypeSignature.Equals("PADES_LTA");
+                    string fileName = GenerateFileName(postFileDto.IdUser, postFileDto.IdApp, isLTA);
                     ValidateExistingPendingFolder();
 
                     string filePath = GeneratePathPendingFile(fileName, typeFile);
@@ -83,7 +84,7 @@ namespace StoreFiles.API.Services.StoreFiles
             return outputStream.ToArray();
         }
 
-        private string GenerateFileName(int idUser, int idApp)
+        private string GenerateFileName(int idUser, int idApp, bool isLTA)
         {
             //string placeholderName = "[DATE]-[GUID]-[ID_USER]-[ID-APP]";
             string placeholderName = "[DATE]-[GUID]-[ID-APP]-[ID_USER]";
@@ -95,6 +96,9 @@ namespace StoreFiles.API.Services.StoreFiles
             placeholderName = placeholderName.Replace("[GUID]", guidFile);
             placeholderName = placeholderName.Replace("[ID_USER]", idUser.ToString());
             placeholderName = placeholderName.Replace("[ID-APP]", idApp.ToString());
+
+            if (isLTA)
+                placeholderName += "-LTA";
 
             fileName = placeholderName;
 

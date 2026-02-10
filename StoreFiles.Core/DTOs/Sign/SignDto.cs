@@ -13,6 +13,7 @@ namespace StoreFiles.Core.DTOs.Sign
         public string WordKeySigning { get; set; }
         //public AxisPosition SignPosition { get; set; }
         //public AxisPosition QRPosition { get; set; }
+        public string TypeSignature { get; set; }
         public InformationTsa InformationTsa { get; set; }
     }
 }

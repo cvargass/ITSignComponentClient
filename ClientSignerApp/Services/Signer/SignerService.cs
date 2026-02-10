@@ -83,10 +83,33 @@ namespace ClientSignerApp.Services.Signer
                     throw new InvalidOperationException("No se ha seleccionado ningún certificado.");
 
                 ps.LoadPdfDocument(file);
+                /*
                 bytesFileSigned = ps.ApplyDigitalSignature();
 
                 if (tsaDataDto is not null)
                     bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
+                */
+
+                bool isLTA = guidFile.Contains("-LTA");
+
+                if (tsaDataDto is not null)
+                {
+                    ps.SignatureStandard = PdfSignatureStandard.PadesLT;
+
+                    if (isLTA)
+                        ps.SignatureStandard = PdfSignatureStandard.PadesLTA;
+
+                    ps.TimeStamping.ServerUrl = new Uri(tsaDataDto.UrlTsaServer);
+                    ps.TimeStamping.UserName = tsaDataDto.User;
+                    ps.TimeStamping.Password = tsaDataDto.Password;
+                    ps.TimeStamping.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                }
+                else
+                {
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                }
             }
             catch (Exception ex)
             {
@@ -150,12 +173,35 @@ namespace ClientSignerApp.Services.Signer
                     ps.SignaturePosition = GetSignPosition(1);
                 }
 
+                /*
                 ps.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
 
                 bytesFileSigned = ps.ApplyDigitalSignature();
 
                 if (tsaDataDto is not null)
                     bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
+                */
+
+                bool isLTA = guidFile.Contains("-LTA");
+
+                if (tsaDataDto is not null)
+                {
+                    ps.SignatureStandard = PdfSignatureStandard.PadesLT;
+
+                    if (isLTA)
+                        ps.SignatureStandard = PdfSignatureStandard.PadesLTA;
+
+                    ps.TimeStamping.ServerUrl = new Uri(tsaDataDto.UrlTsaServer);
+                    ps.TimeStamping.UserName = tsaDataDto.User;
+                    ps.TimeStamping.Password = tsaDataDto.Password;
+                    ps.TimeStamping.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                }
+                else
+                {
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                }
             }
             catch (Exception ex)
             {

@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_41263AF53DB04AEFB47589E13CA54CF2"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6274090130EF4312BE5DC673AA5E219C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -250,6 +256,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_41263AF53DB04AEFB47589E13CA54CF2"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:iTextSharp-4.1.6, Version=4.1.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_41263AF53DB04AEFB47589E13CA54CF2"
+                    {
+                    "Name" = "8:iTextSharp-4.1.6.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\ClientSignerApp\\Lib\\NewVersion\\iTextSharp-4.1.6.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6274090130EF4312BE5DC673AA5E219C"
             {
             "SourcePath" = "8:..\\ClientSignerApp\\Icon\\CA.ico"
@@ -389,7 +426,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SignerApp"
         "ProductCode" = "8:{2967860C-3A48-4684-89D4-11BC7B959CAA}"
-        "PackageCode" = "8:{A08310F8-1764-477F-BBAE-DB08651ECA4B}"
+        "PackageCode" = "8:{0BAAE5E8-2EAC-46D4-AFB3-F9910352FFB6}"
         "UpgradeCode" = "8:{43149489-C87E-4169-A8CB-1A30AC7E1107}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -1222,7 +1259,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_BED0E0EFA00D41B19AE10AB52CDA42E7"
             {
-            "SourcePath" = "8:..\\ClientSignerApp\\obj\\Debug\\net7.0-windows7.0\\apphost.exe"
+            "SourcePath" = "8:..\\ClientSignerApp\\obj\\Debug\\net8.0-windows7.0\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"

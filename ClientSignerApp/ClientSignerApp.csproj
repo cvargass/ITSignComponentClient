@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext7" Version="8.0.0" />
     <PackageReference Include="log4net" Version="3.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
@@ -30,21 +31,19 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
 	<PackageReference Include="Net.Codecrete.QrCodeGenerator" Version="2.0.4" />
+	<PackageReference Include="System.Windows.Extensions" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="itextsharp">
-      <HintPath>Lib\itextsharp.dll</HintPath>
-    </Reference>
-    <Reference Include="iTextSharp-4.1.6">
-      <HintPath>Lib\iTextSharp-4.1.6.dll</HintPath>
-    </Reference>
     <Reference Include="SignLib">
-      <HintPath>Lib\SignLib.dll</HintPath>
+      <HintPath>Lib\NewVersion\SignLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Lib\NewVersion\iTextSharp-4.1.6.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

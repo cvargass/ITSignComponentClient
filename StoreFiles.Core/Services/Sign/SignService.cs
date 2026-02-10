@@ -114,10 +114,34 @@ namespace StoreFiles.Core.Services.Sign
                 //Load the signature certificate from P12 file
                 ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(_SignOptions.UrlSignCertificate, _SignOptions.PasswordCertificate);
 
+                /*
                 bytesFileSigned = ps.ApplyDigitalSignature();
+                bytesFileSigned = signDto.File;
 
                 if (signDto.InformationTsa is not null)
                     bytesFileSigned = ApplyTSASignature(bytesFileSigned, signDto.InformationTsa);
+                */
+
+                if (signDto.InformationTsa is not null)
+                {
+                    ps.SignatureStandard = PdfSignatureStandard.PadesLT;
+
+                    if (signDto.TypeSignature is not null && signDto.TypeSignature.Equals("PADES_LTA"))
+                        ps.SignatureStandard = PdfSignatureStandard.PadesLTA;
+                    
+                    ps.TimeStamping.ServerUrl = new Uri(signDto.InformationTsa.Url);
+                    ps.TimeStamping.UserName = signDto.InformationTsa.User;
+                    ps.TimeStamping.Password = signDto.InformationTsa.Password;
+                    ps.TimeStamping.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+                    //ps.PadesLtvLevel = PadesLtvLevel.IncludeCrlAndOcsp; //include both CRL and OCSP
+                    //ps.MaxCrlSize = 2048 * 1024; //2 MB - very large CRL will also be added
+                    //ps.SignatureStandard = SignLib.Pdf.PdfSignatureStandard.Pades; //PAdES signature
+
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                } else
+                {
+                    bytesFileSigned = ps.ApplyDigitalSignature();
+                }
 
                 if (_savePDFFilesAPI)
                     _storeFileService.StoreFileSignedAPI(bytesFileSigned);

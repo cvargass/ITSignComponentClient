@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <Reference Include="iTextSharp-4.1.6">
-      <HintPath>..\StoreFiles.API\SignLibLibrary\iTextSharp-4.1.6.dll</HintPath>
+      <HintPath>..\StoreFiles.API\SignLibLibrary\NewVersion\iTextSharp-4.1.6.dll</HintPath>
     </Reference>
     <Reference Include="SignLib">
-      <HintPath>..\StoreFiles.API\SignLibLibrary\SignLib.dll</HintPath>
+      <HintPath>..\StoreFiles.API\SignLibLibrary\NewVersion\SignLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
