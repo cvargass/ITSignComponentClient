@@ -72,8 +72,29 @@ namespace ClientSignerApp.Services.Signer
                 ps.VisibleSignature = false;
                 if (this.DigitalSignatureCertificate is null)
                 {
-                    ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
-                    this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+                    //ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+                    //this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+
+                    var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadOnly);
+
+                    var certificadosValidos = store.Certificates
+                        .Find(X509FindType.FindByTimeValid, DateTime.Now, true)
+                        .Find(X509FindType.FindByKeyUsage, X509KeyUsageFlags.DigitalSignature, true);
+
+                    var seleccion = X509Certificate2UI.SelectFromCollection(
+                        certificadosValidos,
+                        "Seleccione el certificado",
+                        "Certificados válidos para firma",
+                        X509SelectionFlag.SingleSelection
+                    );
+
+                    if (seleccion.Count > 0)
+                    {
+                        var cert = seleccion[0];
+                        ps.DigitalSignatureCertificate = cert;
+                        this.DigitalSignatureCertificate = cert;
+                    }
                 } else
                 {
                     ps.DigitalSignatureCertificate = this.DigitalSignatureCertificate;
@@ -133,8 +154,29 @@ namespace ClientSignerApp.Services.Signer
 
                 if (this.DigitalSignatureCertificate is null)
                 {
-                    ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
-                    this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+                    //ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(false, "", "Seleccione el certificado", "");
+                    //this.DigitalSignatureCertificate = ps.DigitalSignatureCertificate;
+
+                    var store = new X509Store(StoreName.My, StoreLocation.CurrentUser);
+                    store.Open(OpenFlags.ReadOnly);
+
+                    var certificadosValidos = store.Certificates
+                        .Find(X509FindType.FindByTimeValid, DateTime.Now, true)
+                        .Find(X509FindType.FindByKeyUsage, X509KeyUsageFlags.DigitalSignature, true);
+
+                    var seleccion = X509Certificate2UI.SelectFromCollection(
+                        certificadosValidos,
+                        "Seleccione el certificado",
+                        "Certificados válidos para firma",
+                        X509SelectionFlag.SingleSelection
+                    );
+
+                    if (seleccion.Count > 0)
+                    {
+                        var cert = seleccion[0];
+                        ps.DigitalSignatureCertificate = cert;
+                        this.DigitalSignatureCertificate = cert;
+                    }
                 }
                 else
                 {

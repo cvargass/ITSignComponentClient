@@ -39,12 +39,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8A2E51BEC100404F8A6AD61F41A67D40"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_BED0E0EFA00D41B19AE10AB52CDA42E7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -159,7 +153,7 @@
             "InstallAction" = "3:1"
             "Arguments" = "8:"
             "EntryPoint" = "8:"
-            "Sequence" = "3:2"
+            "Sequence" = "3:1"
             "Identifier" = "8:_A66C96FD_82A4_441B_B584_30F4447CE91A"
             "InstallerClass" = "11:TRUE"
             "CustomActionData" = "8:/targetdir=\"[TARGETDIR]\\\" /URL_API=\"[URL_API]\" /URL_FRONT=\"[URL_FRONT]\""
@@ -175,20 +169,6 @@
             "EntryPoint" = "8:"
             "Sequence" = "3:1"
             "Identifier" = "8:_B00A4C92_DD7F_4C61_BF03_2D163D8F843D"
-            "InstallerClass" = "11:FALSE"
-            "CustomActionData" = "8:"
-            }
-            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_D4A389AA8AD44441BE75EF6C380377F6"
-            {
-            "Name" = "8:windowsdesktop-runtime-7.0.20-win-x64.exe"
-            "Condition" = "8:"
-            "Object" = "8:_8A2E51BEC100404F8A6AD61F41A67D40"
-            "FileType" = "3:2"
-            "InstallAction" = "3:1"
-            "Arguments" = "8:/install /quiet /norestart"
-            "EntryPoint" = "8:"
-            "Sequence" = "3:1"
-            "Identifier" = "8:_1E60852F_98DD_4859_94FB_DC2D669907AB"
             "InstallerClass" = "11:FALSE"
             "CustomActionData" = "8:"
             }
@@ -307,26 +287,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A2E51BEC100404F8A6AD61F41A67D40"
-            {
-            "SourcePath" = "8:..\\ClientSignerApp\\windowsdesktop-runtime-7.0.20-win-x64.exe"
-            "TargetName" = "8:windowsdesktop-runtime-7.0.20-win-x64.exe"
-            "Tag" = "8:"
-            "Folder" = "8:_3948F0DBD6274422A01F0DA0E2FDFD29"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EF03C3CF453E24C2D52547ACFC4BBE24"
             {
             "AssemblyRegister" = "3:1"
@@ -426,7 +386,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:SignerApp"
         "ProductCode" = "8:{2967860C-3A48-4684-89D4-11BC7B959CAA}"
-        "PackageCode" = "8:{0BAAE5E8-2EAC-46D4-AFB3-F9910352FFB6}"
+        "PackageCode" = "8:{FF3FCAB1-5FFD-4738-9774-6CB15F76D6F8}"
         "UpgradeCode" = "8:{43149489-C87E-4169-A8CB-1A30AC7E1107}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
