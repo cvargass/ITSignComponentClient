@@ -111,6 +111,11 @@ namespace StoreFiles.Core.Services.Sign
                     _SignOptions.PasswordCertificate = signDto.PasswordCertificate;
                 }
 
+                X509Certificate2 certificate = DigitalCertificate.LoadCertificate(_SignOptions.UrlSignCertificate, _SignOptions.PasswordCertificate);
+
+                if (certificate.NotAfter < DateTime.Now)
+                    throw new Exception("El certificado está vencido y no se puede utilizar para firmar.");
+
                 //Load the signature certificate from P12 file
                 ps.DigitalSignatureCertificate = DigitalCertificate.LoadCertificate(_SignOptions.UrlSignCertificate, _SignOptions.PasswordCertificate);
 

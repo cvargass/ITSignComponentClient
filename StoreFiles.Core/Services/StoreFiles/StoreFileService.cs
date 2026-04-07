@@ -110,7 +110,7 @@ namespace StoreFiles.API.Services.StoreFiles
             try
             {
                 //var placeholderSearch = "-[ID-USER]-[ID-APP]";
-                var placeholderSearch = "-[ID-APP]-[ID-USER]";
+                var placeholderSearch = "-[ID-APP]-[ID-USER]-";
                 List<string> files = new List<string>();
                 string ext = GetExtensionTypeFile(typeFile);
 
