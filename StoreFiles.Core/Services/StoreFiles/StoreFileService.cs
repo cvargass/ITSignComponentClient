@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace StoreFiles.API.Services.StoreFiles
 {
@@ -109,22 +110,22 @@ namespace StoreFiles.API.Services.StoreFiles
         {
             try
             {
-                //var placeholderSearch = "-[ID-USER]-[ID-APP]";
-                var placeholderSearch = "-[ID-APP]-[ID-USER]-";
+                var placeholderSearch = "-[ID-APP]-[ID-USER]";
                 List<string> files = new List<string>();
                 string ext = GetExtensionTypeFile(typeFile);
 
                 placeholderSearch = placeholderSearch.Replace("[ID-USER]", pendingFileQueryFilter.IdUser.ToString());
                 placeholderSearch = placeholderSearch.Replace("[ID-APP]", pendingFileQueryFilter.IdApp.ToString());
 
-                //Elimina los archivos, manteniendo los archivos de los ultimos {n} dias según configuracion appsettings
+                // Elimina los archivos, manteniendo los archivos de los últimos {n} días según configuración appsettings
                 CleanFolderSignedFiles();
                 ValidateExistingPendingFolder();
 
                 string[] filesTemp = Directory.GetFiles(_pendingFilesPath, "*.*").Where(s => s.EndsWith(ext)).ToArray();
-                    
-                //Selecciona los archivos por IdUser y IdApp
-                filesTemp = filesTemp.Where(x => x.Contains(placeholderSearch)).ToArray();
+
+                // Selecciona los archivos por IdUser y IdApp usando regex para identificar "-LTA.pdf", "-LT.pdf" o ".pdf"
+                var regexPattern = $@"{Regex.Escape(placeholderSearch)}(-LTA|-LT)?\.pdf$";
+                filesTemp = filesTemp.Where(x => Regex.IsMatch(x, regexPattern)).ToArray();
 
                 for (int i = 0; i < filesTemp.Length; i++)
                 {
