@@ -1,12 +1,16 @@
 ﻿using ITSignerWebComponent.SignApp.Responses.APIStoreResponses;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
+using Microsoft.VisualBasic.FileIO;
 using StoreFiles.Core.DTOs.FileForSigning;
+using StoreFiles.Core.DTOs.Grafic;
 using StoreFiles.Core.DTOs.PostFile;
 using StoreFiles.Core.DTOs.PostFileSigned;
 using StoreFiles.Core.DTOs.UpdateFilePending;
+using System;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ITSignerWebComponent.SignApp.APIStoreFiles
@@ -177,5 +181,48 @@ namespace ITSignerWebComponent.SignApp.APIStoreFiles
             return url;
         }
 
+        public async Task<(bool, string)> StoreGrafic(PostGraficDto postGraficDto)
+        {
+            string guidFile = string.Empty;
+            string url = GenerateUrl($"api/grafics");
+
+            var response = await httpClient.PostAsJsonAsync(url, postGraficDto);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var tokenResponse = await response.Content.ReadFromJsonAsync<PostFileResponse>();
+                guidFile = tokenResponse.GuidFile;
+            }
+            else
+            {
+                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
+            }
+
+            return (response.IsSuccessStatusCode, guidFile);
+        }
+
+        public async Task<(bool flag, byte[] bytesFile)> GetGrafic(string guidFile)
+        {
+            byte[] fileBase64 = null;
+            bool flag = false;
+            string url = GenerateUrl($"api/grafics");
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseService = await response.Content.ReadFromJsonAsync<FileResponse>();
+                if (responseService.FileBase64 != null)
+                {
+                    fileBase64 = Convert.FromBase64String(responseService.FileBase64);
+                    flag = true;
+                }
+            }
+            else
+            {
+                await _jsRuntime.InvokeVoidAsync("log", response.RequestMessage + " ReasonPhrase: " + response.ReasonPhrase + " StatusCode: " + response.StatusCode);
+            }
+
+            return (flag, fileBase64);
+        }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using SignerPDF.DigitalSignature.Core.Domain.AxisPosition;
+using StoreFiles.Core.DTOs.Grafic;
 using StoreFiles.Core.DTOs.UpdateFilePending;
 using StoreFiles.Core.Services.Utils;
 using System;
@@ -95,6 +96,16 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropIntegrated
         {
             try
             {
+                // Si es tipo Grafo o Compuesta sin imagen cargada
+                if (((int)this.TypeSigning == 3 && this.BytesImageGrafic is null) || ((int)this.TypeSigning == 4 && this.BytesImageGrafic is null))
+                {
+                    await _swalService.FireAsync("Error", "Por favor ingrese la imagen de grafo para la firma.", "error");
+                    return;
+                } else
+                {
+                    await _apiStoreFilesService.StoreGrafic(new PostGraficDto { Guid = Filename, GraficBase64 = Convert.ToBase64String(BytesImageGrafic) });
+                }
+
                 await _jsRuntime.InvokeVoidAsync("setLoadingSigningButton");
                 await _jsRuntime.InvokeVoidAsync("setGuidPendingSigning", Filename);
 
@@ -109,6 +120,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropIntegrated
                     position = infoPositions;
                 }
 
+                /*
                 //GraficPosition
                 var strInfoPositionsGrafic = await _jsRuntime.InvokeAsync<string>("GetPositionGrafic");
                 if (strInfoPositionsGrafic is not null && BytesImageGrafic is not null)
@@ -117,7 +129,7 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropIntegrated
                     infoPositionsGrafic.NumberPage = NumberPage;
                     var pdfWithImage = _UtilsService.WriteImageInPDFCordinates(Convert.FromBase64String(this.PreSignedDto.PdfToSign), BytesImageGrafic, 140, 100, infoPositionsGrafic);
                     await _apiStoreFilesService.UpdatePendingFile(new UpdateFilePendingDto { PdfGuid = Filename, PdfSignedBase64 = Convert.ToBase64String(pdfWithImage) }, "pades");
-                }
+                }*/
                 
                 var parameters = this.GenerateParameters(position);
 
@@ -139,12 +151,16 @@ namespace ITSignerWebComponent.SignApp.Pages.Components.DragAndDropIntegrated
 
         private string GenerateParameters(AxisPosition position)
         {
-            // ESTRUCTURE: type_file1_page|x|y       Must specify the position of the signature
+            // ESTRUCTURE: type_file1_page|x|y|signing_type       Must specify the position of the signature
+
+            int idTypeSigning = (int)this.TypeSigning;
+
             string parameters = "individual_";
             parameters += Filename + "_";
             parameters += NumberPage + "|";
             parameters += position.CoordinateX + "|";
-            parameters += position.CoordinateY;
+            parameters += position.CoordinateY + "|";
+            parameters += idTypeSigning.ToString();
 
             return parameters.Trim();
         }

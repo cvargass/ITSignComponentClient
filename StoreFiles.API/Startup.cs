@@ -9,6 +9,7 @@ using StoreFiles.API.Services.StoreFiles;
 using StoreFiles.Core.Filters;
 using StoreFiles.Core.Options;
 using StoreFiles.Core.Services.Cades;
+using StoreFiles.Core.Services.GraficSigning;
 using StoreFiles.Core.Services.Logger;
 using StoreFiles.Core.Services.Sign;
 using StoreFiles.Core.Services.StoreFiles;
@@ -55,6 +56,7 @@ namespace StoreFiles.API
             services.AddTransient<IUtilsService, UtilsService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
             services.AddTransient<IWriterQRService, WriterQRService>();
+            services.AddTransient<IGraficSigningService, GraficSigningService>();
 
             services.Configure<SignOptions>(Configuration.GetSection("SignConfigurations"));
 
