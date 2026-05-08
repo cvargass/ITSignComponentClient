@@ -74,5 +74,27 @@ namespace ClientSignerApp.Controllers
                 return null;
             }
         }
+
+        public async Task<FileResponse?> GetGrafic(string guidFile)
+        {
+            string url = $"{_baseUrl}/api/grafics/{guidFile}";
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync(url);
+                response.EnsureSuccessStatusCode();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var fileResponse = await response.Content.ReadFromJsonAsync<FileResponse>();
+                    return fileResponse;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }

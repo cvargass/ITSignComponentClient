@@ -133,7 +133,16 @@ namespace ClientSignerApp
 
                 if (!string.IsNullOrEmpty(strFile))
                 {
-                    byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition, tsaParams);
+                    byte[] grafic = null;
+                    int? signingType = null;
+
+                    if (this.SignaturePosition.Split("|").Length == 4)
+                    {
+                        signingType = Convert.ToInt32(this.SignaturePosition.Split("|")[3]);
+                        grafic = await GetGrafic(guidFile);
+                    }
+
+                    byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition, tsaParams, signingType, grafic);
 
                     if (signedFile is not null)
                     {
@@ -148,6 +157,30 @@ namespace ClientSignerApp
             }
 
             await CloseApplication();
+        }
+
+        private async Task<byte[]?> GetGrafic(string guidFile)
+        {
+            byte[] grafic = null;
+            var fileResponse = await filesController.GetGrafic(guidFile);
+
+            if (fileResponse is not null)
+            {
+                if (fileResponse.FileBase64 is not null)
+                {
+                    grafic = Convert.FromBase64String(fileResponse.FileBase64);
+                }
+                else
+                {
+                    _loggerService.LogInformation($"{fileResponse.Message} - Identificativo: {guidFile}");
+                }
+            }
+            else
+            {
+                _loggerService.LogInformation($"No se pudo obtener el archivo identificador {guidFile} para firmar.");
+            }
+
+            return grafic;
         }
 
         private async Task CloseApplication()

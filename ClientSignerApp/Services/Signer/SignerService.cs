@@ -9,6 +9,8 @@ using System.Text;
 using ClientSignerApp.Services.QRGenerator;
 using System.Net;
 using ClientSignerApp.DTOs.Tsa;
+using ClientSignerApp.Services.SignatureGrafic;
+using Org.BouncyCastle.Crypto.Tls;
 
 namespace ClientSignerApp.Services.Signer
 {
@@ -20,13 +22,15 @@ namespace ClientSignerApp.Services.Signer
         private string _textQr;
         private IQRGeneratorService _qrGeneratorService;
         private string _serialNumber;
+        private readonly ISignatureGraficService _signatureGraficService;
 
         private X509Certificate2 DigitalSignatureCertificate { get; set; }
 
         public SignerService(ILoggerService logger,
                            IOptions<SignOptions> options,
                            IConfiguration configuration,
-                           IQRGeneratorService qrGeneratorService)
+                           IQRGeneratorService qrGeneratorService,
+                           ISignatureGraficService signatureGraficService)
         {
             _logger = logger;
             _SignOptions = options.Value;
@@ -34,6 +38,7 @@ namespace ClientSignerApp.Services.Signer
             _textQr = configuration["QrConfiguration:Text"].ToString();
             _qrGeneratorService = qrGeneratorService;
             _serialNumber = _configuration["SignConfigurations:SerialNumber"];
+            _signatureGraficService = signatureGraficService;
         }
 
         private SignaturePosition GetSignPosition(int? idPositionSign)
@@ -141,7 +146,7 @@ namespace ClientSignerApp.Services.Signer
             return bytesFileSigned;
         }
 
-        public byte[] SignFile(byte[] file, string guidFile, string dataPosition, TsaDataDto? tsaDataDto)
+        public byte[] SignFile(byte[] file, string guidFile, string dataPosition, TsaDataDto? tsaDataDto, int? signingType = null, byte[] grafic = null)
         {
             byte[] bytesFileSigned = null;
 
@@ -207,42 +212,66 @@ namespace ClientSignerApp.Services.Signer
                     int coordinateX = Convert.ToInt32(dataPosition.Split("|")[1]);
                     int CoordinateY = Convert.ToInt32(dataPosition.Split("|")[2]);
 
-                    ps.SignatureAdvancedPosition = new Rectangle(new Point(coordinateX, CoordinateY), new Size(200, 80));
-                    ps.SignaturePage = numberPage;
-                }
-                else
-                {
-                    ps.SignaturePosition = GetSignPosition(1);
-                }
+                    if (signingType is not null)
+                    {
+                        if (signingType == 1) //Rubric
+                        {
+                            ps.SignatureImage = null;
+                        }
+                        else if (signingType == 2) //RubricQR
+                        {
+                            ps.SignatureImage = bytesQR;
+                        }
+                        else if (signingType == 3) //Grafic
+                        {
+                            ps.SignatureImage = grafic;
+                            ps.SignatureImageType = SignatureImageType.ImageWithNoText;
+                        }
+                        else if (signingType == 4) //Composed
+                        {
+                            string issuerName = GetIssuerName(ps.DigitalSignatureCertificate);
+                            byte[] composedGrafic = _signatureGraficService.GenerateComposedGrafic(grafic, bytesQR, issuerName, _configuration["InfoSignature:Reason"], _configuration["InfoSignature:Location"]);
+                            ps.SignatureImage = composedGrafic;
+                            ps.SignatureImageType = SignatureImageType.ImageWithNoText;
+                        }
 
-                /*
-                ps.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+                        ps.SignatureAdvancedPosition = new Rectangle(new Point(coordinateX, CoordinateY), new Size(200, 80));
+                        ps.SignaturePage = numberPage;
+                    }
+                    else
+                    {
+                        ps.SignaturePosition = GetSignPosition(1);
+                    }
 
-                bytesFileSigned = ps.ApplyDigitalSignature();
-
-                if (tsaDataDto is not null)
-                    bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
-                */
-
-                bool isLTA = guidFile.Contains("-LTA");
-
-                if (tsaDataDto is not null)
-                {
-                    ps.SignatureStandard = PdfSignatureStandard.PadesLT;
-
-                    if (isLTA)
-                        ps.SignatureStandard = PdfSignatureStandard.PadesLTA;
-
-                    ps.TimeStamping.ServerUrl = new Uri(tsaDataDto.UrlTsaServer);
-                    ps.TimeStamping.UserName = tsaDataDto.User;
-                    ps.TimeStamping.Password = tsaDataDto.Password;
-                    ps.TimeStamping.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+                    /*
+                    ps.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
 
                     bytesFileSigned = ps.ApplyDigitalSignature();
-                }
-                else
-                {
-                    bytesFileSigned = ps.ApplyDigitalSignature();
+
+                    if (tsaDataDto is not null)
+                        bytesFileSigned = ApplyTSASignature(bytesFileSigned, tsaDataDto);
+                    */
+
+                    bool isLTA = guidFile.Contains("-LTA");
+
+                    if (tsaDataDto is not null)
+                    {
+                        ps.SignatureStandard = PdfSignatureStandard.PadesLT;
+
+                        if (isLTA)
+                            ps.SignatureStandard = PdfSignatureStandard.PadesLTA;
+
+                        ps.TimeStamping.ServerUrl = new Uri(tsaDataDto.UrlTsaServer);
+                        ps.TimeStamping.UserName = tsaDataDto.User;
+                        ps.TimeStamping.Password = tsaDataDto.Password;
+                        ps.TimeStamping.HashAlgorithm = SignLib.HashAlgorithm.SHA256;
+
+                        bytesFileSigned = ps.ApplyDigitalSignature();
+                    }
+                    else
+                    {
+                        bytesFileSigned = ps.ApplyDigitalSignature();
+                    }
                 }
             }
             catch (Exception ex)
@@ -265,15 +294,7 @@ namespace ClientSignerApp.Services.Signer
                     string[] itemsSubject = certificate.Subject.Split(",");
                     string issuerName = string.Empty;
 
-                    issuerName = itemsSubject.Where(x => x.Contains("CN=")
-                                                                || x.Contains("SN=")).FirstOrDefault();
-                    if (issuerName is null)
-                        issuerName = "issuerName";
-                    else
-                    {
-                        issuerName = issuerName.Replace("CN=", "");
-                        issuerName = issuerName.Replace("SN=", "");
-                    }
+                    issuerName = GetIssuerName(certificate);
 
                     _textQr = _textQr.Replace("[NAME]", issuerName);
                     _textQr = _textQr.Replace("[REASON]", _configuration["InfoSignature:Reason"]);
@@ -289,6 +310,24 @@ namespace ClientSignerApp.Services.Signer
             }
 
             return certificateInfo;
+        }
+
+        public string GetIssuerName(X509Certificate2 certificate)
+        {
+            string[] itemsSubject = certificate.Subject.Split(",");
+            string issuerName = string.Empty;
+
+            issuerName = itemsSubject.Where(x => x.Contains("CN=")
+                                                        || x.Contains("SN=")).FirstOrDefault();
+            if (issuerName is null)
+                issuerName = "issuerName";
+            else
+            {
+                issuerName = issuerName.Replace("CN=", "");
+                issuerName = issuerName.Replace("SN=", "");
+            }
+
+            return issuerName;
         }
 
         public byte[] ApplyTSASignature(byte[] pdf, TsaDataDto tsaDataDto)

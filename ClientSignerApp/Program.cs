@@ -1,6 +1,7 @@
 using ClientSignerApp.Services.APIStoreFiles;
 using ClientSignerApp.Services.Logger;
 using ClientSignerApp.Services.QRGenerator;
+using ClientSignerApp.Services.SignatureGrafic;
 using ClientSignerApp.Services.Signer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,6 +49,7 @@ namespace ClientSignerApp
             services.AddTransient<ILoggerService, LoggerService>();
             services.AddTransient<ISignerService, SignerService>();
             services.AddTransient<IQRGeneratorService, QRGeneratorService>();
+            services.AddTransient<ISignatureGraficService, SignatureGraficService>();
 
             services.AddHttpClient<IAPIStoreFilesService, APIStoreFilesService>(client =>
             {
@@ -91,12 +93,12 @@ namespace ClientSignerApp
                 if (type == "massive")
                 {
                     //ESTRUCTURE type_file1_file2_file3
-                    mainForm.SetGuidFiles(new string[] { "massive", "27AGOSTO2025-0117CD24-2000-31", "27AGOSTO2025-0117CD24-2000-32", "27AGOSTO2025-0117CD24-2000-33" });
+                    mainForm.SetGuidFiles(new string[] { "massive", "18SEPTIEMBRE2023-D527D60D-2000-31", "19SEPTIEMBRE2023-D527D60D-2000-31" });
                 }
                 else if (type == "individual")
                 {
-                    //ESTRUCTURE type_file1_page|x|y
-                    mainForm.SetGuidFiles(new string[] { "individual", "29AGOSTO2025-726AEF3F-2000-31", "1|50|50" });
+                    //ESTRUCTURE type_file1_page|x|y|signing_type
+                    mainForm.SetGuidFiles(new string[] { "individual", "15ABRIL2026-7B3D0D40-2000-31", "1|286|466|4" });
                 } else
                 {
                     MessageBox.Show("Parámetros inválidos para iniciar la aplicación.");
