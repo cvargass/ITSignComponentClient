@@ -92,7 +92,7 @@ namespace ClientSignerApp
                 //ESTRUCTURE type_file1_page|x|y
                 //Remove first and last value {signigMode...signaturePosition}
                 Range range = new Range(1, _guidFiles.Length - 1);
-                this.SignaturePosition = _guidFiles[_guidFiles.Length - 1];
+                this.SignaturePosition = Uri.UnescapeDataString(_guidFiles[_guidFiles.Length - 1]);
                 _guidFiles = _guidFiles.Take(range).ToArray();
             } else
             {
@@ -139,7 +139,10 @@ namespace ClientSignerApp
                     if (this.SignaturePosition.Split("|").Length == 4)
                     {
                         signingType = Convert.ToInt32(this.SignaturePosition.Split("|")[3]);
-                        grafic = await GetGrafic(guidFile);
+
+                        //Grafic o Composed
+                        if (signingType == 3 || signingType == 4)
+                            grafic = await GetGrafic(guidFile);
                     }
 
                     byte[] signedFile = _signerService.SignFile(Convert.FromBase64String(strFile), guidFile, this.SignaturePosition, tsaParams, signingType, grafic);
