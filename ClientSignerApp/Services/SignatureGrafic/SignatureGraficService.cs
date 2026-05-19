@@ -16,7 +16,7 @@ namespace ClientSignerApp.Services.SignatureGrafic
             // TAMAÑO FINAL
             // =========================
 
-            int width = 1200;
+            int width = 1280;
             int height = 300;
 
             using var surface = SKSurface.Create(
@@ -133,7 +133,7 @@ namespace ClientSignerApp.Services.SignatureGrafic
             var qrRect = new SKRect(
                 860,
                 20,
-                900 + qrSize,
+                1000 + qrSize,
                 35 + qrSize);
 
             canvas.DrawBitmap(
