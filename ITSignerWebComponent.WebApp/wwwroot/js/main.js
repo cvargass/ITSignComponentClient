@@ -165,8 +165,8 @@ onFinalizeClientSigning = async function (urlGetSignedFile, secondsReloadAfterSi
 
         var guidPendingFile = getCookie("GuidPendingFile");
         //console.log(guidPendingFile);
-        if (window.location.toString().includes("signer-file?") && guidPendingFile ||
-            window.location.toString().includes("signer-integrated?") && guidPendingFile) {
+        if (window.location.toString().toLowerCase().includes("signer-file?") && guidPendingFile ||
+            window.location.toString().toLowerCase().includes("signer-integrated?") && guidPendingFile) {
             const response = await fetch(urlGetSignedFile + guidPendingFile);
             const responseJson = await response.json();
             if (responseJson.fileBase64) {
