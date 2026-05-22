@@ -174,10 +174,10 @@ onFinalizeClientSigning = async function (urlGetSignedFile, secondsReloadAfterSi
                 showSuccessSwall("Exitoso", "¡ Archivo Firmado Correctamente !");
                 setVisibleBtnDownloadDoc();
 
-                //var seconds = secondsReloadAfterSign * 1000;
-                //setTimeout(() => {
-                //    location.reload();
-                //}, seconds);
+                var seconds = secondsReloadAfterSign * 1000;
+                setTimeout(() => {
+                    location.reload();
+                }, seconds);
             } else {
                 console.log(responseJson);
                 showErrorSwall("Error.", "Ha ocurrido un inconveniente firmando el documento.");
