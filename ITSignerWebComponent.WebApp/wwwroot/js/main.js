@@ -165,7 +165,8 @@ onFinalizeClientSigning = async function (urlGetSignedFile, secondsReloadAfterSi
 
         var guidPendingFile = getCookie("GuidPendingFile");
         //console.log(guidPendingFile);
-        if (window.location.toString().includes("signer-file?") && guidPendingFile) {
+        if (window.location.toString().includes("signer-file?") && guidPendingFile ||
+            window.location.toString().includes("signer-integrated?") && guidPendingFile) {
             const response = await fetch(urlGetSignedFile + guidPendingFile);
             const responseJson = await response.json();
             if (responseJson.fileBase64) {
@@ -173,16 +174,17 @@ onFinalizeClientSigning = async function (urlGetSignedFile, secondsReloadAfterSi
                 showSuccessSwall("Exitoso", "¡ Archivo Firmado Correctamente !");
                 setVisibleBtnDownloadDoc();
 
-                var seconds = secondsReloadAfterSign * 1000;
-                setTimeout(() => {
-                    location.reload();
-                }, seconds);
+                //var seconds = secondsReloadAfterSign * 1000;
+                //setTimeout(() => {
+                //    location.reload();
+                //}, seconds);
             } else {
+                console.log(responseJson);
                 showErrorSwall("Error.", "Ha ocurrido un inconveniente firmando el documento.");
 
                 setTimeout(() => {
                     location.reload();
-                }, 3000)
+                }, 5000)
             }
         } else {
             showSuccessSwall("Exitoso", "¡ Archivos Firmados Correctamente !");
